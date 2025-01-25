@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://runtimeeventapp.com/hforlife/webservices.php'
