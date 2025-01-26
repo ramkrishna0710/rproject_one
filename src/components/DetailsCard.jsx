@@ -4,15 +4,17 @@ import { theme } from '../constants/theme';
 import { hp } from '../helpers/common';
 import Feather from 'react-native-vector-icons/Feather'
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import { useNavigation } from '@react-navigation/native';
 
 
 const DetailsCard = ({ imageUri, title, description, buttons }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
 
       {/* Header Image */}
       <Image source={{ uri: imageUri }} style={styles.image} />
-      <AntDesign name='left' size={hp(3)} style={styles.arrowLeft} />
+      <AntDesign name='left' size={hp(3)} style={styles.arrowLeft} onPress={() => navigation.navigate('AgendaScreen')} />
 
       {/* Title and Description */}
       <View style={styles.textContainer}>

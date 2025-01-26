@@ -3,8 +3,6 @@ import DetailsCard from '../components/DetailsCard';
 import { fetchAgendaDetails } from '../helpers/api';
 import LoadingModal from '../components/LoadingModal';
 
-console.log(fetchAgendaDetails);
-
 const AgendaDetailsScreen = ({ navigation, route }) => {
 
   const { id } = route.params;

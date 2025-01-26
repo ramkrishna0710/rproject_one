@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react'
 import { BASE_URL } from '../config';
-import { Alert } from 'react-native';
+import { Alert, ToastAndroid } from 'react-native';
+import CustomToast from '../components/CustomToast';
 
 export const AuthContext = createContext();
 
@@ -16,7 +17,6 @@ export const AuthProvider = ({ children }) => {
   const [otpSuccess, setOtpSuccess] = useState(false);
 
   console.log("User ", user);
-
 
 
   useEffect(() => {
@@ -63,21 +63,18 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true)
 
       const url = `${BASE_URL}?reqAction=login&userregid=${email}&email=${email}&pass=${password}`;
-
       const response = await axios.get(url);
-      // console.log("Response Data ", response.data);
-
-      // console.log("Response status ", response.data.requestStatus);
-
       if (response.data && response.data.requestStatus === 'Success') {
-        const userData = response.data.Content[0];
+        const userData = {...response.data.Content[0], verified: false};
         console.log(userData);
         setUser(userData);
         await AsyncStorage.setItem('user', JSON.stringify(userData));
-        Alert.alert('Login Successful', response.data.msg);
+        <CustomToast message={`'Login Successful', ${response.data.msg}`}/>
+        // Alert.alert('Login Successful', response.data.msg);
         setLoginSuccess(true)
       } else {
-        Alert.alert('Login Failed', response.data.message || 'Invalid credentials.');
+        <CustomToast message={`${response.data.message} || 'Invalid credentials.`} visible={true} />
+        
         setLoginSuccess(false)
       }
     } catch (error) {
@@ -124,39 +121,64 @@ export const AuthProvider = ({ children }) => {
   //   }
   // };
 
+  // const verifyOtp = async ({ otp }) => {
+  //   try {
+  //     setIsLoading(true);
+  //     const url = `${BASE_URL}?reqAction=userchkotp&userregid=${user?.userregid}&otp=${otp}`;
+  //     console.log(`OTP Verification URL: ${url}`);
+
+  //     const response = await fetch(url);
+  //     const data = await response.json();
+  //     if (!response.ok) {
+  //       throw new Error(data?.msg || 'Failed to verify OTP.');
+  //     }
+  //     const otpNumber = Number(otp);
+  //     if (user?.otp === otpNumber) {
+  //       const updatedUser = { ...user, verified: true };
+  //       setUser(updatedUser);
+  //       await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+  //       setOtpSuccess(true);
+  //     } else {
+  //       setOtpSuccess(false);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error verifying OTP:', error);
+  //     if (error.response) {
+  //       Alert.alert('Error', error.response.data.msg || 'Something went wrong.');
+  //     } else {
+  //       Alert.alert('Error', 'Network error or server unreachable.');
+  //     }
+  //     setOtpSuccess(false);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
   const verifyOtp = async ({ otp }) => {
     try {
       setIsLoading(true);
       const url = `${BASE_URL}?reqAction=userchkotp&userregid=${user?.userregid}&otp=${otp}`;
-      console.log(`OTP Verification URL: ${url}`);
-
-      const response = await fetch(url);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.msg || 'Failed to verify OTP.');
-      }
-      const otpNumber = Number(otp);
-      if (user?.otp === otpNumber) {
+      const response = await axios.get(url);
+  
+      if (response.data && response.data.requestStatus === 'Success') {
         const updatedUser = { ...user, verified: true };
         setUser(updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
         setOtpSuccess(true);
+        Alert.alert('OTP Verified', 'You have successfully verified your account.');
       } else {
+        Alert.alert('OTP Verification Failed', response.data.msg || 'Invalid OTP.');
         setOtpSuccess(false);
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      if (error.response) {
-        Alert.alert('Error', error.response.data.msg || 'Something went wrong.');
-      } else {
-        Alert.alert('Error', 'Network error or server unreachable.');
-      }
+      Alert.alert('Error', 'Network error or server unreachable.');
       setOtpSuccess(false);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
 
   const logout = async () => {
     setIsLoading(true)

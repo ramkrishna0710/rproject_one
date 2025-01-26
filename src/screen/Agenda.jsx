@@ -1,22 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import ItemCard from '../components/ItemCard';
 import { theme } from '../constants/theme';
 import { hp } from '../helpers/common';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AgendaScreen = ({ navigation, route }) => {
 
-  const agendaItem = route?.params?.data || [];
+  const [agendaItem, setAgendaItem] = useState(route?.params?.data || []);
 
-  // console.warn("AgendaItem ", agendaItem);
+  // const agendaItem = route?.params?.data || [];
 
-  // console.log("AgendaItem ", agendaItem);
-  
+  useFocusEffect(
+    React.useCallback(() => {
+      if (route?.params?.data) {
+        setAgendaItem(route.params.data);
+      }
+    }, [route.params])
+  );
 
-  // const navigateToDetails = (screen) => {
-  //   navigation.navigate(screen);
-  // };
 
   const renderItem = ({ item }) => (
     <ItemCard
@@ -45,7 +48,7 @@ const AgendaScreen = ({ navigation, route }) => {
         renderItem={renderItem}
         contentContainerStyle={styles.contentContainer}
         ListFooterComponent={
-          <TouchableOpacity style={styles.footerButton} onPress={() => navigateToDetails('FullAgenda')}>
+          <TouchableOpacity style={styles.footerButton} onPress={() => {}}>
             <Text style={styles.footerButtonText}>View Agenda</Text>
           </TouchableOpacity>
         }

@@ -8,6 +8,8 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import VideoSlider from '../components/VideoSlider';
 import { fetchAgenda, fetchEventDetails, fetchSpeakers, fetchVideos } from '../helpers/api';
 import LoadingModal from '../components/LoadingModal';
+import DrawerScreenWrapper from '../components/DrawerScreenWrapper';
+import { useDrawerStatus } from '@react-navigation/drawer';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -20,10 +22,7 @@ const HomeScreen = ({ navigation }) => {
   const [eventId, setEventId] = useState(null)
   const [video, setVideo] = useState(null)
 
-  // console.warn("Fetched videos ", video);
-  // console.warn("Event Details data:", eventDetalis);
-  console.warn("Event ID HOME ", eventId);
-
+  const drawerStatus = useDrawerStatus();
 
   useEffect(() => {
     loadSpeakers();
@@ -108,94 +107,108 @@ const HomeScreen = ({ navigation }) => {
   const firstSpeaker = speakers[0];
 
   return (
-    <View style={styles.container}>
-      {
-        loading ? (
-          <LoadingModal loading={loading} />
-        ) : (
-          <>
-            <StatusBar backgroundColor={theme.colors.primary} />
-            <View style={styles.iconContainer}>
-              <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                <Icon name="menu" size={35} color="white" />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
-                <Icon name="notifications" size={35} color="white" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView>
-
-              {/* Header */}
-              <View style={styles.headerContainer}>
-                <Text style={styles.headerTextStyle}>{eventDetalis.event_title}</Text>
-                <View style={styles.headerDivider} />
-                <View style={styles.dateLocationContainer}>
-                  <View style={styles.dateAndLocation}>
-                    <Text style={styles.locationDateTxt}>{eventDetalis.event_date}</Text>
-                    <Text style={styles.locationDateTxt}>{eventDetalis.event_location}</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => {
-                      // console.log("Navigate with id ", eventId),
-                      navigation.navigate('DetailsEventsTab', { eventId: eventId })
-                    }
-                    }
-                    style={styles.eventDetailsBtn}
-                  >
-                    <Text style={styles.eventTxt}>Event Details</Text>
-                  </Pressable>
-                </View>
-              </View>
-
-              {/* Dashboard */}
-              <View>
-                <Text style={styles.dashBoardTxt}>Dashboard</Text>
-                <Dashboard speakersData={speakers} agendasData={agenda} videosData={video} />
-              </View>
-
-              {/* Event register */}
-              <TouchableOpacity
-                onPress={() => { }}
-                style={styles.eventRegister}>
-                <Text
-                  style={styles.eventRegTxt}
-                  numberOfLines={2}
-                  ellipsizeMode="tail"
-                >Register here to attend event at OVAL</Text>
-                <Entypo name='chevron-right' size={25} color={theme.colors.primary} style={{ marginRight: theme.radius.xl }} />
-              </TouchableOpacity>
-
-              {/* Videos */}
-              <Text style={styles.videosTxt}>Videos</Text>
-              <View style={styles.videoContainer}>
-                <VideoSlider videosData={video} horizontal={true} />
-              </View>
-
-              {/* Speakers */}
-              <Text style={styles.speakerTxt} >Speakers</Text>
-              <TouchableOpacity onPress={() => navigation.navigate('SpeakerDetails', { firstSpeaker })}>
-                <View style={styles.speakerContainer}>
-                  <Image
-                    source={{
-                      uri: firstSpeaker?.profile_pic
-                        ? `https://runtimeeventapp.com/hforlife/${firstSpeaker?.profile_pic}`
-                        : 'https://via.placeholder.com/100',
-                    }}
-                    style={styles.speakerImg}
+    <DrawerScreenWrapper>
+      <View style={styles.container}>
+        {
+          loading ? (
+            <LoadingModal loading={loading} />
+          ) : (
+            <>
+              <StatusBar backgroundColor={theme.colors.primary} />
+              <View style={styles.iconContainer}>
+                <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+                  <Icon
+                    name={drawerStatus === 'open' ? 'arrow-back' : 'menu'}
+                    size={35}
+                    color="white"
                   />
-                  <View>
-                    <Text style={styles.speakerName}>{firstSpeaker?.name}</Text>
-                    <Text style={styles.speakerDescription}>{firstSpeaker?.company_name}</Text>
-                  </View>
-                  <Entypo name='chevron-right' size={25} color={theme.colors.primary} style={{ marginRight: 10 }} />
-                </View>
-              </TouchableOpacity>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
+                  <Icon name="notifications" size={35} color="white" />
+                </TouchableOpacity>
+              </View>
 
-            </ScrollView>
-          </>
-        )}
-    </View>
+              <ScrollView>
+
+                {/* Header */}
+                <View style={styles.headerContainer}>
+                  <Text style={styles.headerTextStyle}>{eventDetalis.event_title}</Text>
+                  <View style={styles.headerDivider} />
+                  <View style={styles.dateLocationContainer}>
+                    <View style={styles.dateAndLocation}>
+                      <Text style={styles.locationDateTxt}>{eventDetalis.event_date}</Text>
+                      <Text style={styles.locationDateTxt}>{eventDetalis.event_location}</Text>
+                    </View>
+                    <Pressable
+                      onPress={() => {
+                        // console.log("Navigate with id ", eventId),
+                        navigation.navigate('DetailsEventsTab', { eventId: eventId })
+                      }
+                      }
+                      style={styles.eventDetailsBtn}
+                    >
+                      <Text style={styles.eventTxt}>Event Details</Text>
+                    </Pressable>
+                  </View>
+                </View>
+
+                {/* Dashboard */}
+                <View>
+                  <Text style={styles.dashBoardTxt}>Dashboard</Text>
+                  <Dashboard speakersData={speakers} agendasData={agenda} videosData={video} navigation={navigation} />
+                </View>
+
+                {/* Event register */}
+                <View style={styles.eventRegister}>
+                  <TouchableOpacity
+                    onPress={() => { }}
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginRight: theme.padding.lg
+                    }}
+                  >
+                    <Text
+                      style={styles.eventRegTxt}
+                      numberOfLines={2}
+                      ellipsizeMode="tail"
+                    >Register here to attend event at OVAL</Text>
+                    <Entypo name='chevron-right' size={25} color={theme.colors.primary} style={{ marginRight: theme.radius.xxl }} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Videos */}
+                <Text style={styles.videosTxt}>Videos</Text>
+                <View style={styles.videoContainer}>
+                  <VideoSlider videosData={video} horizontal={true} />
+                </View>
+
+                {/* Speakers */}
+                <Text style={styles.speakerTxt} >Speakers</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('SpeakerDetails', { firstSpeaker })}>
+                  <View style={styles.speakerContainer}>
+                    <Image
+                      source={{
+                        uri: firstSpeaker?.profile_pic
+                          ? `https://runtimeeventapp.com/hforlife/${firstSpeaker?.profile_pic}`
+                          : 'https://via.placeholder.com/100',
+                      }}
+                      style={styles.speakerImg}
+                    />
+                    <View>
+                      <Text style={styles.speakerName}>{firstSpeaker?.name}</Text>
+                      <Text style={styles.speakerDescription}>{firstSpeaker?.company_name}</Text>
+                    </View>
+                    <Entypo name='chevron-right' size={25} color={theme.colors.primary} style={{ marginRight: 10 }} />
+                  </View>
+                </TouchableOpacity>
+
+              </ScrollView>
+            </>
+          )}
+      </View>
+    </DrawerScreenWrapper>
   )
 }
 
@@ -268,9 +281,6 @@ const styles = StyleSheet.create({
     padding: theme.radius.xxs
   },
   eventRegister: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     padding: theme.padding.md,
     borderRadius: theme.radius.xxl,
     shadowColor: theme.colors.gray,

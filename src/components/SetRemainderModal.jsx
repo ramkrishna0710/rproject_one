@@ -1,18 +1,34 @@
 import { Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native'
-import React from 'react'
-import { hp } from '../helpers/common'
+import React, { useEffect, useState } from 'react'
+import { hp, wp } from '../helpers/common'
 import { theme } from '../constants/theme'
+import LoadingModal from './LoadingModal'
 
 const SetRemainderModal = ({ closeModal }) => {
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setLoading(false); 
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
-        <Modal style={styles.modalOverlay}>
+        <Modal transparent={true} animationType="fade" onRequestClose={closeModal}>
             <TouchableWithoutFeedback onPress={closeModal}>
-                <View style={styles.modalContent}>
-                    <Text style={styles.txt}>Session Remainder Added Successfully</Text>
-                    <View style={styles.divider} />
-                    <TouchableOpacity onPress={closeModal}>
-                        <Text style={styles.okTxt}>Ok</Text>
-                    </TouchableOpacity>
+                <View style={styles.modalOverlay}>
+                    {loading ? (
+                        <LoadingModal loading={loading} />
+                    ) : (
+                        <View style={styles.modalContent}>
+                            <Text style={styles.txt}>Session Reminder Added Successfully</Text>
+                            <View style={styles.divider} />
+                            <TouchableOpacity onPress={closeModal}>
+                                <Text style={styles.okTxt}>Ok</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
                 </View>
             </TouchableWithoutFeedback>
         </Modal>
@@ -29,26 +45,34 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     modalContent: {
-        width: 200,
-        padding: 20,
+        width: wp(80),
+        paddingVertical: theme.padding.md,
+        paddingHorizontal: theme.padding.lg,
         backgroundColor: '#fff',
-        borderRadius: 10,
+        borderRadius: theme.radius.sm,
         alignItems: 'center',
-        elevation: 5, // Shadow for Android
-        shadowColor: '#000', // Shadow for iOS
+        elevation: 5,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 4,
     },
     txt: {
         fontSize: hp(2.4),
-        color: theme.colors.lightGrey
+        color: theme.colors.black,
+        textAlign: 'center',
+        marginBottom: theme.padding.sm,
     },
     divider: {
-        color: theme.colors.lightGrey
+        width: '80%',
+        height: 1,
+        backgroundColor: theme.colors.lightGrey,
+        marginVertical: theme.padding.sm,
     },
     okTxt: {
         fontSize: hp(2.4),
-        color: theme.colors.lightGrey
-    }
-})
+        color: theme.colors.primary,
+        fontWeight: 'bold',
+        marginTop: theme.padding.md,
+    },
+});

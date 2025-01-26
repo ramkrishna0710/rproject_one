@@ -2,14 +2,12 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
 import { theme } from "../constants/theme";
 import { hp, wp } from "../helpers/common";
 
-const Dashboard = ({ speakersData, agendasData, videosData }) => {
+const Dashboard = ({ speakersData, agendasData, videosData, navigation }) => {
     // console.log("Dashboard videosData ", videosData);
 
-    const navigation = useNavigation();
 
     const items = [
         { label: "Agenda", icon: "calendar", screen: "AgendaScreen" },

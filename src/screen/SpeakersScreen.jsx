@@ -38,8 +38,8 @@ const SpeakersScreen = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity style={styles.arrowLeft} onPress={() => { navigation.goBack() }}>
-                    <AntDesign name='left' size={hp(3)} />
+                <TouchableOpacity style={styles.arrowLeft} onPress={() => { navigation.navigate('AgendaDetails', { id: agendaSpeakers.speaker_id })}}>
+                    <AntDesign name='left' size={hp(3)} color={theme.colors.primary} />
                 </TouchableOpacity>
                 <Text style={styles.header}>Speakers</Text>
             </View>

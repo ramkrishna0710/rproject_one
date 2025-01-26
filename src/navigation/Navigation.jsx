@@ -6,7 +6,7 @@ import FirstScreen from '../screen/auth/FirstScreen';
 import SignUp from '../screen/auth/SignUp';
 import LogIn from '../screen/auth/LogIn';
 import OtpScreen from '../screen/auth/OtpScreen';
-import MyProfile from '../screen/auth/MyProfile';
+import MyProfile from '../screen/MyProfile';
 import { AuthContext } from '../context/AuthContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import CustomDrawerContent from '../screen/CustomDrawerContent';
@@ -22,17 +22,28 @@ import SpeakersScreen from '../screen/SpeakersScreen';
 import SpeakerDetails from '../screen/SpeakerDetails';
 import SpeakersDetailsMain from '../screen/SpeakersDetailsMain';
 import QandA from '../screen/QandA';
-import SessionScreenModal from '../screen/SessionScreenModal';
 import Notification from '../screen/Notification';
 import DetailsEventsTab from '../screen/DetailsEventsTab';
-import LoadingModal from '../components/LoadingModal';
+import DeleteAccount from '../screen/DeleteAccount';
+import { wp } from '../helpers/common';
+import { theme } from '../constants/theme';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const DrawerNav = () => {
     return (
-        <Drawer.Navigator screenOptions={{ headerShown: false }} drawerContent={(props) => <CustomDrawerContent {...props} />}>
+        <Drawer.Navigator
+            screenOptions={{
+                drawerType: 'slide',
+                headerShown: false,
+                drawerStyle: { width: wp(60) },
+                // drawerHideStatusBarOnOpen: true,
+                overlayColor: 'transparent',
+                sceneContainerStyle: { backgroundColor: theme.colors.primary }
+            }}
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
+        >
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="AgendaScreen" component={AgendaScreen} />
             <Drawer.Screen name="Speakers" component={Speakers} />
@@ -43,11 +54,12 @@ const DrawerNav = () => {
             <Drawer.Screen name="AgendaDetails" component={AgendaDetailsScreen} />
             <Drawer.Screen name="SessionScreen" component={SessionScreen} />
             <Drawer.Screen name="SpeakersScreen" component={SpeakersScreen} />
-            <Drawer.Screen name="SessionScreenModal" component={SessionScreenModal} />
             <Drawer.Screen name="SpeakerDetails" component={SpeakerDetails} />
             <Drawer.Screen name="SpeakersDetailsMain" component={SpeakersDetailsMain} />
             <Drawer.Screen name="Notification" component={Notification} />
             <Drawer.Screen name="DetailsEventsTab" component={DetailsEventsTab} />
+            <Drawer.Screen name='MyProfile' component={MyProfile} />
+            <Drawer.Screen name='DeleteAccount' component={DeleteAccount} />
         </Drawer.Navigator>
     );
 };
@@ -68,34 +80,26 @@ const AuthNav = () => {
                 name='LogIn'
                 component={LogIn}
             />
-            <Stack.Screen
-                name='OtpScreen'
-                component={OtpScreen}
-            />
             <Stack.Screen name="DrawerNav" component={DrawerNav} />
-            <Stack.Screen
-                name='MyProfile'
-                component={MyProfile}
-            />
         </Stack.Navigator>
     );
 };
 
+const OtpNav = () => {
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="OtpScreen" component={OtpScreen} />
+    </Stack.Navigator>
+}
+
 const Navigation = () => {
 
-    const { isLoading, user, otpSuccess } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     return (
         <NavigationContainer>
-            {isLoading ? (
-                <LoadingModal />
-            ) : (
-                user !== null ? (
-                    <DrawerNav />
-                ) : (
-                    <AuthNav />
-                )
-            )}
+            {
+                user ? <DrawerNav /> : <AuthNav />
+            }
         </NavigationContainer>
     )
 }

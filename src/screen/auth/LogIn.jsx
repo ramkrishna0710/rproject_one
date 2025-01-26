@@ -3,6 +3,8 @@ import React, { useContext, useEffect, useState } from 'react'
 import LinearGradient from 'react-native-linear-gradient'
 import CustomButton from '../../components/CustomButton'
 import { AuthContext } from '../../context/AuthContext'
+import LoadingModal from '../../components/LoadingModal'
+import CustomToast from '../../components/CustomToast'
 
 const LogIn = ({ navigation }) => {
 
@@ -13,15 +15,15 @@ const LogIn = ({ navigation }) => {
 
   useEffect(() => {
     if(loginSuccess === true  && user !== null) {
-      console.log('Login successful, navigate to otp screen');
+      <CustomToast message={"'Login successful, navigate to otp screen'"}/>
       navigation.navigate('OtpScreen');
     } else if(loginSuccess === false) {
-      Alert.alert('Login Failed', 'Please try again.');
+      <CustomToast message={"'Login Failed', 'Please try again.'"}/>
     }
   }, [loginSuccess, navigation]);
 
   const handleLogin = () => {
-    login({ email, password });
+    login({ email, password }, navigation);
   };
 
 
@@ -59,7 +61,7 @@ const LogIn = ({ navigation }) => {
         </TouchableOpacity>
 
         {isLoading ? (
-          <ActivityIndicator size="large" color="#fff" />
+          <LoadingModal loading={isLoading} />
         ) : (
           <CustomButton
             style={styles.logInContainer}

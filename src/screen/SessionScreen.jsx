@@ -6,28 +6,31 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import { useNavigation } from '@react-navigation/native';
 import { fetchAgendaSession } from '../helpers/api';
 import LoadingModal from '../components/LoadingModal';
+import SessionScreenModal from './SessionScreenModal';
 
 
 const SessionScreen = ({ navigation, route }) => {
 
-  const { id } = route.params;
+  const { id } = route?.params;
   // console.warn("Session ID ", id);
 
   const [agendaSession, setAgendaSession] = useState(null)
-  // console.warn("AgendaItem Session data ", agendaSession);
-
+  const [selectedSession, setSelectedSession] = useState(null);
+  console.warn("AgendaItem selected Session data ", selectedSession);
+  const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadAgendaSession();
-  }, [])
+    if (id) {
+      loadAgendaSession();
+    }
+  }, [id]);
 
   const loadAgendaSession = async () => {
     try {
       setLoading(true);
       const data = await fetchAgendaSession({ id });
-      // console.warn("Session Data ", data);
       setAgendaSession(data);
     } catch (error) {
       setError(error.message);
@@ -38,7 +41,12 @@ const SessionScreen = ({ navigation, route }) => {
 
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('SessionScreenModal', { agendaSession: item })}>
+    <TouchableOpacity style={styles.card}
+      onPress={() => {
+        setSelectedSession(item);
+        setModalVisible(true);
+      }}
+    >
       <View style={styles.timeContainer}>
         <Text style={styles.timeText}>{item.session_time}</Text>
       </View>
@@ -56,7 +64,7 @@ const SessionScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity style={styles.arrowLeft} onPress={() => { navigation.goBack() }}>
+        <TouchableOpacity style={styles.arrowLeft} onPress={() => { navigation.navigate('AgendaDetails', { id: agendaSession.agenda_id }) }}>
           <AntDesign name='left' size={hp(3.5)} color={theme.colors.primary} />
         </TouchableOpacity>
         <Text style={styles.header}>H4Life: Tuesday 19th November 2024</Text>
@@ -72,6 +80,12 @@ const SessionScreen = ({ navigation, route }) => {
           />
         )
       }
+      {modalVisible && selectedSession && (
+        <SessionScreenModal
+          agendaSession={selectedSession}
+          closeModal={() => setModalVisible(false)}
+        />
+      )}
     </View>
   );
 };

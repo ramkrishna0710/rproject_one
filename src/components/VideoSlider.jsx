@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContainer: {
-    paddingHorizontal: 10,
+    // paddingHorizontal: theme.padding.xxs,
   },
   itemContainer: {
     borderRadius: theme.radius.xxl,
@@ -72,17 +72,17 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   thumbnail: {
-    width: wp(91),
+    width: wp(92.7),
     height: hp(26),
     borderRadius: theme.radius.xxl,
   },
   video: {
-    width: wp(91),
+    width: wp(92.7),
     height: hp(26),
     borderRadius: theme.radius.xxl,
   },
   title: {
-    width: wp(91),
+    width: wp(92.7),
     fontSize: hp(2),
     fontWeight: theme.fonts.bold,
     color: theme.colors.lightGrey,

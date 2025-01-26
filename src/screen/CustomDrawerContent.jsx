@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import LogoutModal from '../components/LogOutModal';
 import { AuthContext } from '../context/AuthContext';
 import { hp } from '../helpers/common';
+import CustomToast from '../components/CustomToast';
 
 function CustomDrawerContent(props) {
   const { navigation } = props;

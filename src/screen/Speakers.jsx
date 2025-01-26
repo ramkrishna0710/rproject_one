@@ -43,7 +43,7 @@ const Speakers = ({ route }) => {
       </View>
       <FlatList
         data={speakersItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item.toString()}
         renderItem={renderItem}
       />
     </View>

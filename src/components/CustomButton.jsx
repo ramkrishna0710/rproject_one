@@ -1,12 +1,14 @@
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
+import { theme } from '../constants/theme'
+import LoadingModal from './LoadingModal'
 
-const CustomButton = ({ buttonName, onPress, isLoading = false }) => {
+const CustomButton = ({ buttonName, onPress, isLoading = false, style, backgroundColor = theme.colors.white, color = theme.colors.black }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={styles.logInContainer}>
+    <TouchableOpacity onPress={onPress} style={[styles.logInContainer, { backgroundColor }, style]}>
       {isLoading ? 
-        <ActivityIndicator size={'small'} color={'black'} /> :
-        <Text style={styles.logInTxt}>{buttonName}</Text>
+        <LoadingModal loading={isLoading}/> :
+        <Text style={[styles.logInTxt, {color}]}>{buttonName}</Text>
       }
     </TouchableOpacity>
   )
@@ -24,15 +26,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 3,
-    backgroundColor: 'white',
-    marginTop: 40,
+    marginTop: 20,
     justifyContent: 'center',
     alignItems: 'center'
   },
   logInTxt: {
     fontSize: 16,
     alignSelf: 'center',
-    color: 'black',
     fontWeight: 'bold'
   },
 })
