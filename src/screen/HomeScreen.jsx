@@ -1,4 +1,4 @@
-import { ActivityIndicator, Image, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, Image, Linking, Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -21,6 +21,7 @@ const HomeScreen = ({ navigation }) => {
   const [error, setError] = useState(null);
   const [eventId, setEventId] = useState(null)
   const [video, setVideo] = useState(null)
+  const [links, setLinks] = useState([]);
 
   const drawerStatus = useDrawerStatus();
 
@@ -39,6 +40,27 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     loadVideos();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://runtimeeventapp.com/hforlife/webservices.php?reqAction=dashboardlink');
+        const data = await response.json();
+
+        if (data.requestStatus === 'Success') {
+          const activeLinks = data.Content.filter(item => item.status === true); // Filter links with `status: true`
+          setLinks(activeLinks);
+        } else {
+          console.error('Error fetching data:', data.Error);
+        }
+      } catch (error) {
+        console.error('API fetch error:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
 
   const loadEventDetails = async () => {
     try {
@@ -109,24 +131,25 @@ const HomeScreen = ({ navigation }) => {
   return (
     <DrawerScreenWrapper>
       <View style={styles.container}>
+        <StatusBar backgroundColor={theme.colors.primary} />
+        <View style={styles.iconContainer}>
+          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
+            <Icon
+              name={drawerStatus === 'open' ? 'arrow-back' : 'menu'}
+              size={35}
+              color="white"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
+            <Icon name="notifications" size={35} color="white" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.divider} />
         {
           loading ? (
             <LoadingModal loading={loading} />
           ) : (
             <>
-              <StatusBar backgroundColor={theme.colors.primary} />
-              <View style={styles.iconContainer}>
-                <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-                  <Icon
-                    name={drawerStatus === 'open' ? 'arrow-back' : 'menu'}
-                    size={35}
-                    color="white"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
-                  <Icon name="notifications" size={35} color="white" />
-                </TouchableOpacity>
-              </View>
 
               <ScrollView>
 
@@ -159,23 +182,29 @@ const HomeScreen = ({ navigation }) => {
                 </View>
 
                 {/* Event register */}
-                <View style={styles.eventRegister}>
-                  <TouchableOpacity
-                    onPress={() => { }}
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginRight: theme.padding.lg
-                    }}
-                  >
-                    <Text
-                      style={styles.eventRegTxt}
-                      numberOfLines={2}
-                      ellipsizeMode="tail"
-                    >Register here to attend event at OVAL</Text>
-                    <Entypo name='chevron-right' size={25} color={theme.colors.primary} style={{ marginRight: theme.radius.xxl }} />
-                  </TouchableOpacity>
+                <View>
+                  {links.map((item, index) => (
+                    <View key={index} style={styles.eventRegister}>
+                      <TouchableOpacity
+                        onPress={() => Linking.openURL(item.link)}
+                        style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingHorizontal: theme.padding.xs }}
+                      >
+                        <Text
+                          style={styles.eventRegTxt}
+                          numberOfLines={2}
+                          ellipsizeMode="tail"
+                        >
+                          {item.name}
+                        </Text>
+                        <Entypo
+                          name='chevron-right'
+                          size={25}
+                          color={theme.colors.primary}
+                          style={styles.icon}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
                 </View>
 
                 {/* Videos */}
@@ -224,7 +253,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.padding.xxs
+    paddingHorizontal: theme.padding.xxs,
+    paddingBottom: theme.padding.xxs
+  },
+  divider: {
+    width: '100%',
+    height: 0.4,
+    backgroundColor: '#333',
+    borderRadius: 5, 
+    shadowColor: '#000',  
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.4,  
+    shadowRadius: 8,  
+    elevation: 8, 
   },
   headerContainer: {
     backgroundColor: theme.colors.primary,
@@ -281,7 +322,7 @@ const styles = StyleSheet.create({
     padding: theme.radius.xxs
   },
   eventRegister: {
-    padding: theme.padding.md,
+    padding: theme.padding.xl,
     borderRadius: theme.radius.xxl,
     shadowColor: theme.colors.gray,
     shadowOffset: { width: 0, height: 2 },

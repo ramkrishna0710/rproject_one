@@ -15,7 +15,7 @@ function CustomDrawerContent(props) {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (
-    <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
+    <View style={styles.container}>
 
       <DrawerContentScrollView {...props}>
 
@@ -80,7 +80,7 @@ function CustomDrawerContent(props) {
         onClose={() => setModalVisible(false)}
         onLogout={() => {logout()}} 
       />
-    </LinearGradient>
+    </View>
   );
 }
 
@@ -90,7 +90,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    paddingVertical: hp(22)
+    paddingVertical: hp(22),
+    backgroundColor: '#59bc50'
   },
   drawerItemContainer: {
     flexDirection: 'row',
@@ -100,8 +101,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   label: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '800',
     color: 'white'
   },
 

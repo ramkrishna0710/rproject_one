@@ -3,9 +3,9 @@ import React from 'react'
 import { theme } from '../constants/theme'
 import LoadingModal from './LoadingModal'
 
-const CustomButton = ({ buttonName, onPress, isLoading = false, style, backgroundColor = theme.colors.white, color = theme.colors.black }) => {
+const CustomButton = ({ buttonName, onPress, isLoading = false, style, borderColor, backgroundColor = theme.colors.white, color = theme.colors.black }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.logInContainer, { backgroundColor }, style]}>
+    <TouchableOpacity onPress={onPress} style={[styles.logInContainer, { backgroundColor, borderColor }, style]}>
       {isLoading ? 
         <LoadingModal loading={isLoading}/> :
         <Text style={[styles.logInTxt, {color}]}>{buttonName}</Text>
@@ -25,10 +25,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 5,
     marginTop: 20,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderWidth: 1
   },
   logInTxt: {
     fontSize: 16,

@@ -1,12 +1,42 @@
-import { Image, Modal, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react';
+import { Modal, StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native';
 import { hp, wp } from '../helpers/common';
 import { theme } from '../constants/theme';
 import ModalButton from '../components/ModalButton';
 import SetRemainderModal from '../components/SetRemainderModal';
+import { AuthContext } from '../context/AuthContext';
+import { BASE_URL } from '../config';
 
 const SessionScreenModal = ({ agendaSession, closeModal }) => {
-  const [remainderVisible, setRemainderVisible] = useState(false);
+
+  const { user } = useContext(AuthContext);
+
+  const [reminderVisible, setRemainderVisible] = useState(false);
+  const [reminderList, setReminderList] = useState([]);
+
+  useEffect(() => {
+    const fetchReminders = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}?reqAction=getreminderlist&userregid=${user.userregid}`);
+        const data = await response.json();
+
+        if (data.requestStatus === 'Success') {
+          setReminderList(data.Content);
+        } else {
+          console.error('Error fetching reminders:', data.Error);
+        }
+      } catch (error) {
+        console.error('API fetch error:', error);
+      }
+    };
+
+    fetchReminders();
+  }, []);
+
+  const handleSetReminder = (session) => {
+    console.log('Reminder Set for:', session);
+    setRemainderVisible(true);
+  };
 
   return (
     <Modal transparent={true} animationType="fade" onRequestClose={closeModal}>
@@ -34,19 +64,21 @@ const SessionScreenModal = ({ agendaSession, closeModal }) => {
                 </View>
               </View>
             </View>
+
             <View style={styles.btnContainer}>
               <ModalButton onPress={closeModal} buttonName="Cancel" borderColor={theme.colors.rose} />
               <ModalButton
-                onPress={() => setRemainderVisible(true)}
+                onPress={() => handleSetReminder(agendaSession)}
                 buttonName="Set Reminder"
                 borderColor={theme.colors.primary}
                 backgroundColor={theme.colors.primary}
                 txtColor={theme.colors.white}
               />
-              {remainderVisible && (
+              {reminderVisible && (
                 <SetRemainderModal closeModal={() => setRemainderVisible(false)} />
               )}
             </View>
+
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -55,7 +87,6 @@ const SessionScreenModal = ({ agendaSession, closeModal }) => {
 };
 
 export default SessionScreenModal;
-
 
 const styles = StyleSheet.create({
   modalOverlay: {
@@ -73,7 +104,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     paddingVertical: theme.padding.md,
-    alignSelf:  'center'
+    alignSelf: 'center',
   },
   container: {
     justifyContent: 'space-between',
@@ -92,7 +123,7 @@ const styles = StyleSheet.create({
   },
   txtContainer: {
     paddingHorizontal: theme.padding.md,
-    width: '90%'
+    width: '90%',
   },
   sessionTitle: {
     fontSize: hp(2.3),
@@ -104,24 +135,48 @@ const styles = StyleSheet.create({
   textRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: theme.padding.xxs
+    marginTop: theme.padding.xxs,
   },
   speakerHeader: {
     fontSize: hp(1.8),
     fontWeight: theme.fonts.bold,
     color: theme.colors.black,
-    flexShrink: 1
+    flexShrink: 1,
   },
   speakerTitle: {
     fontSize: hp(1.8),
     color: theme.colors.lightGrey,
     paddingHorizontal: theme.padding.xxs,
     flex: 1,
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   btnContainer: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    marginTop: theme.padding.sm
-  }
-})
+    marginTop: theme.padding.sm,
+  },
+  reminderContainer: {
+    padding: theme.padding.sm,
+    marginTop: theme.padding.md,
+    backgroundColor: theme.colors.lightestGray,
+    borderRadius: theme.radius.xs,
+  },
+  reminderTitle: {
+    fontSize: hp(2),
+    fontWeight: theme.fonts.bold,
+    color: theme.colors.black,
+    marginBottom: theme.padding.xs,
+  },
+  reminderItem: {
+    paddingVertical: theme.padding.xxs,
+  },
+  reminderText: {
+    fontSize: hp(1.8),
+    fontWeight: theme.fonts.regular,
+    color: theme.colors.dark,
+  },
+  reminderTime: {
+    fontSize: hp(1.6),
+    color: theme.colors.lightGrey,
+  },
+});

@@ -27,6 +27,8 @@ import DetailsEventsTab from '../screen/DetailsEventsTab';
 import DeleteAccount from '../screen/DeleteAccount';
 import { wp } from '../helpers/common';
 import { theme } from '../constants/theme';
+import ForgotPassword from '../screen/auth/ForgotPassword';
+import ForgotOtp from '../screen/auth/ForgotOtp';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -40,7 +42,7 @@ const DrawerNav = () => {
                 drawerStyle: { width: wp(60) },
                 // drawerHideStatusBarOnOpen: true,
                 overlayColor: 'transparent',
-                sceneContainerStyle: { backgroundColor: theme.colors.primary }
+                sceneContainerStyle: { backgroundColor: '#59bc50' }
             }}
             drawerContent={(props) => <CustomDrawerContent {...props} />}
         >
@@ -80,25 +82,25 @@ const AuthNav = () => {
                 name='LogIn'
                 component={LogIn}
             />
+            <Stack.Screen name="OtpScreen" component={OtpScreen} />
+            <Stack.Screen name='ForgotPassword' component={ForgotPassword} />
+            <Stack.Screen name='ForgotOtp' component={ForgotOtp} />
             <Stack.Screen name="DrawerNav" component={DrawerNav} />
         </Stack.Navigator>
     );
 };
 
-const OtpNav = () => {
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="OtpScreen" component={OtpScreen} />
-    </Stack.Navigator>
-}
 
 const Navigation = () => {
 
-    const { user } = useContext(AuthContext);
+    const { user, drawerUser } = useContext(AuthContext);
 
     return (
-        <NavigationContainer>
+        <NavigationContainer
+        // theme={{ colors: { background: '#59bc50' || '#FFFFFF' } }}
+        >
             {
-                user ? <DrawerNav /> : <AuthNav />
+                drawerUser ? <DrawerNav /> : <AuthNav />
             }
         </NavigationContainer>
     )

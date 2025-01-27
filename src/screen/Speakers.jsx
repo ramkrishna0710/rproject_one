@@ -1,17 +1,29 @@
 import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import { hp, wp } from '../helpers/common'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Entypo from 'react-native-vector-icons/Entypo'
 import { useNavigation } from '@react-navigation/native'
+import LoadingModal from '../components/LoadingModal'
 
 const Speakers = ({ route }) => {
 
-  const speakersItem = route?.params?.data || [];
-  // console.log("Received speakersItem:", speakersItem);
-
+  const [loading, setLoading] = useState(false); // Add loading state
+  const [speakersItem, setSpeakersItem] = useState([]);
+  
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchData = () => {
+      setLoading(true)
+      const data = route?.params?.data || [];
+      setSpeakersItem(data);
+      setLoading(false);
+    };
+    fetchData();
+  }, [route]);
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.speakerContainer} onPress={() => navigation.navigate('SpeakersDetailsMain', { speakersItem: item })}>
@@ -23,7 +35,7 @@ const Speakers = ({ route }) => {
         }}
         style={styles.speakerImg}
       />
-      <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={styles.desContainer}>
           <Text style={styles.speakerName}>{item.name}</Text>
           <Text style={styles.speakerDescription} numberOfLines={1}>{item.company_name}</Text>
@@ -41,11 +53,17 @@ const Speakers = ({ route }) => {
         </TouchableOpacity>
         <Text style={styles.headerText}>Speakers</Text>
       </View>
-      <FlatList
-        data={speakersItem}
-        keyExtractor={(item, index) => item.toString()}
-        renderItem={renderItem}
-      />
+      {
+        loading ?
+          <LoadingModal loading={loading} /> :
+          (
+            <FlatList
+              data={speakersItem}
+              keyExtractor={(item) => item.speaker_id.toString()}
+              renderItem={renderItem}
+            />
+          )
+      }
     </View>
   )
 }

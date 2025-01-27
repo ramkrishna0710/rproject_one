@@ -4,6 +4,8 @@ import LinearGradient from 'react-native-linear-gradient';
 import CustomTextInput from '../../components/CustomTextInput';
 import CustomButton from '../../components/CustomButton';
 import { AuthContext } from '../../context/AuthContext';
+import CustomToast from '../../components/CustomToast';
+import LoadingModal from '../../components/LoadingModal';
 
 const SignUp = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -13,19 +15,73 @@ const SignUp = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
   const [reEnterPassword, setReEnterPassword] = useState('');
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { signup, signupSuccess, isLoading } = useContext(AuthContext);
+  const { signup, signupSuccess } = useContext(AuthContext);
 
-  useEffect(() => {    
+  useEffect(() => {
     if (signupSuccess === true) {
-      console.log('Signup successful, navigating to Login');
-      navigation.navigate('LogIn');
+      // console.log('Signup successful, navigating to Login');
+      setToastMessage('Signup successful!');
+      setToastVisible(true);
+      setTimeout(() => {
+        setIsLoading(false)
+        navigation.navigate('LogIn')
+      }, 2000);
+      setIsLoading(false);
     } else if (signupSuccess === false) {
-      Alert.alert('Signup Failed', 'Please try again.');
+      // Alert.alert('Signup Failed', 'Please try again.');
+      setToastMessage('Signup failed. Please try again.');
+      setToastVisible(true);
+      setIsLoading(false)
     }
   }, [signupSuccess, navigation]);
 
+  const showToast = (message) => {
+    setToastMessage(message);
+    setToastVisible(true);
+  };
+
   const handleSignUp = () => {
+    if (!name || name.length < 4) {
+      showToast('Name cannot be empty.');
+      return;
+    }
+
+    if (!gender || gender.length < 4) {
+      showToast('Gender cannot be empty.');
+      return;
+    }
+
+    if (!mobile || mobile.length < 10) {
+      showToast('Enter a valid mobile number.');
+      return;
+    }
+
+    if (!email || !email.includes('@')) {
+      showToast('Enter a valid email address.');
+      return;
+    }
+
+    if (!address) {
+      showToast('Address cannot be empty.');
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      showToast('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (password !== reEnterPassword) {
+      showToast('Passwords do not match.');
+      return;
+    }
+
+    setIsLoading(true)
+
     signup({
       name,
       gender,
@@ -51,11 +107,16 @@ const SignUp = ({ navigation }) => {
         <CustomTextInput placeholderText="Re-enter password" value={reEnterPassword} onChangeText={setReEnterPassword} secureTextEntry />
 
         {isLoading ? (
-          <ActivityIndicator size="large" color="#ffffff" />
+          <LoadingModal loading={isLoading} />
         ) : (
           <CustomButton buttonName="Submit" onPress={handleSignUp} />
         )}
       </LinearGradient>
+      <CustomToast
+        message={toastMessage}
+        visible={toastVisible}
+        onHide={() => setToastVisible(false)}
+      />
     </SafeAreaView>
   );
 };

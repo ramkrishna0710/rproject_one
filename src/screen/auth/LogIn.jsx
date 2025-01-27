@@ -10,19 +10,34 @@ const LogIn = ({ navigation }) => {
 
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-  const { user, login, isLoading, loginSuccess} = useContext(AuthContext);
+
+  const { user, login, isLoading, loginSuccess } = useContext(AuthContext);
 
   useEffect(() => {
-    if(loginSuccess === true  && user !== null) {
-      <CustomToast message={"'Login successful, navigate to otp screen'"}/>
+    if (loginSuccess === true && user !== null) {
+      setToastMessage('Login successful, navigate to otp screen')
+      setToastVisible(true)
       navigation.navigate('OtpScreen');
-    } else if(loginSuccess === false) {
-      <CustomToast message={"'Login Failed', 'Please try again.'"}/>
+    } else if (loginSuccess === false) {
+      setToastMessage('Login Failed', 'Please try again.')
+      setToastVisible(true)
     }
   }, [loginSuccess, navigation]);
 
   const handleLogin = () => {
+    if (!email) {
+      setToastMessage('Email cannot be empty!');
+      setToastVisible(true);
+      return;
+    }
+    if (!password) {
+      setToastMessage('Password cannot be empty!');
+      setToastVisible(true);
+      return;
+    }
     login({ email, password }, navigation);
   };
 
@@ -54,7 +69,8 @@ const LogIn = ({ navigation }) => {
           onChangeText={text => setPassword(text)}
         />
 
-        <TouchableOpacity onPress={() => { }}
+        <TouchableOpacity
+          onPress={() => {navigation.navigate('ForgotPassword')}}
           style={styles.forgotPasswordContainer}
         >
           <Text style={styles.forgotPasswordTxt}>Forgot Password?</Text>
@@ -70,6 +86,13 @@ const LogIn = ({ navigation }) => {
           />
         )}
       </LinearGradient>
+
+      <CustomToast
+        message={toastMessage}
+        visible={toastVisible}
+        onHide={() => setToastVisible(false)}
+      />
+      
     </SafeAreaView>
   )
 }
@@ -106,7 +129,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     backgroundColor: 'white',
-    marginTop: 40,
+    marginTop: 30,
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -119,7 +142,7 @@ const styles = StyleSheet.create({
   emailInput: {
     height: 50,
     width: '85%',
-    borderRadius: 40,
+    borderRadius: 15,
     borderColor: 'white',
     borderWidth: 1,
     backgroundColor: 'transparent',
@@ -132,11 +155,11 @@ const styles = StyleSheet.create({
   passInput: {
     height: 50,
     width: '85%',
-    borderRadius: 40,
+    borderRadius: 15,
     borderColor: 'white',
     borderWidth: 1,
     backgroundColor: 'transparent',
-    marginTop: 40,
+    marginTop: 20,
     paddingHorizontal: 20,
     color: 'white',
     fontSize: 13,
@@ -145,7 +168,7 @@ const styles = StyleSheet.create({
   forgotPasswordContainer: {
     alignSelf: 'flex-end',
     marginEnd: 15,
-    marginTop: 15,
+    marginTop: 20,
   },
   forgotPasswordTxt: {
     color: 'white',
