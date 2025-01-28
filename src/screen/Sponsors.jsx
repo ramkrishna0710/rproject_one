@@ -6,50 +6,14 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { theme } from '../constants/theme';
 import { hp } from '../helpers/common';
 import { fetchSponsors } from '../helpers/api';
+import LoadingModal from '../components/LoadingModal';
 
 const Sponsors = ({ navigation }) => {
-  const sponsorsItem = [
-    {
-      id: 1,
-      thumbnail: "https://images.unsplash.com/photo-1543062370-c0f03471ae6b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      title: "Bosch",
-      url: "https://www.bosch.co.uk",
-    },
-    {
-      id: 2,
-      thumbnail: "https://media.istockphoto.com/id/1336906283/photo/congrats-word-with-speech-bubble.jpg?s=1024x1024&w=is&k=20&c=2mRnC8uJ6nY25uWgmMuTwVbrQ48bDEBQww8m6s5BdrY=",
-      title: "Ceres Power",
-      url: "https://www.ceres.co.uk",
-    },
-    {
-      id: 3,
-      thumbnail: "https://images.unsplash.com/photo-1543062370-c0f03471ae6b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      title: "Bosch",
-      url: "https://www.bosch.co.uk",
-    },
-    {
-      id: 4,
-      thumbnail: "https://media.istockphoto.com/id/1336906283/photo/congrats-word-with-speech-bubble.jpg?s=1024x1024&w=is&k=20&c=2mRnC8uJ6nY25uWgmMuTwVbrQ48bDEBQww8m6s5BdrY=",
-      title: "Ceres Power",
-      url: "https://www.ceres.co.uk",
-    },
-    {
-      id: 5,
-      thumbnail: "https://images.unsplash.com/photo-1543062370-c0f03471ae6b?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      title: "Bosch",
-      url: "https://www.bosch.co.uk",
-    },
-    {
-      id: 6,
-      thumbnail: "https://media.istockphoto.com/id/1336906283/photo/congrats-word-with-speech-bubble.jpg?s=1024x1024&w=is&k=20&c=2mRnC8uJ6nY25uWgmMuTwVbrQ48bDEBQww8m6s5BdrY=",
-      title: "Ceres Power",
-      url: "https://www.ceres.co.uk",
-    },
-  ];
+
   const [sponsors, setSponsors] = useState([]);
   const [loading, setLoading] = useState(false)
 
-  console.log("Sponsors ", sponsors);
+  // console.log("Sponsors ", sponsors);
 
 
   useEffect(() => {
@@ -98,12 +62,14 @@ const Sponsors = ({ navigation }) => {
       <View style={styles.textContainer}>
         <Text style={styles.text}>Huge thanks to out sponsors for the supporting Hydrogen for Life 2024</Text>
       </View>
-
-      <FlatList
-        data={sponsors}
-        keyExtractor={(item) => item.sponsor_id.toString()}
-        renderItem={renderItem}
-      />
+      {
+        loading ? <LoadingModal loading={loading} /> :
+          <FlatList
+            data={sponsors}
+            keyExtractor={(item) => item.sponsor_id.toString()}
+            renderItem={renderItem}
+          />
+      }
     </View>
   );
 };

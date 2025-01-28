@@ -16,16 +16,26 @@ const LogIn = ({ navigation }) => {
 
   const { user, login, isLoading, loginSuccess } = useContext(AuthContext);
 
-  useEffect(() => {
-    if (loginSuccess === true && user !== null) {
-      setToastMessage('Login successful, navigate to otp screen')
-      setToastVisible(true)
-      navigation.navigate('OtpScreen');
-    } else if (loginSuccess === false) {
-      setToastMessage('Login Failed', 'Please try again.')
-      setToastVisible(true)
-    }
-  }, [loginSuccess, navigation]);
+  console.log("Login log ", user);
+
+
+  // useEffect(() => {
+  //   if (loginSuccess) {
+  //     if (user?.status === '0') {
+  //       setToastMessage('Login successful, navigating to OTP screen...');
+  //       setToastVisible(true);
+  //       navigation.navigate('OtpScreen');
+  //     } else if (user?.status === '1') {
+  //       setToastMessage('Login successful, navigating to home screen...');
+  //       setToastVisible(true);
+  //       navigation.navigate('DrawerNav');
+  //     }
+  //   } else if (loginSuccess === false) {
+  //     setToastMessage('Login Failed. Please try again.');
+  //     setToastVisible(true);
+  //   }
+  // }, [loginSuccess, navigation, user]);
+
 
   const handleLogin = () => {
     if (!email) {
@@ -38,7 +48,8 @@ const LogIn = ({ navigation }) => {
       setToastVisible(true);
       return;
     }
-    login({ email, password }, navigation);
+     login({ email, password }, navigation);
+    
   };
 
 
@@ -70,7 +81,7 @@ const LogIn = ({ navigation }) => {
         />
 
         <TouchableOpacity
-          onPress={() => {navigation.navigate('ForgotPassword')}}
+          onPress={() => { navigation.navigate('ForgotPassword') }}
           style={styles.forgotPasswordContainer}
         >
           <Text style={styles.forgotPasswordTxt}>Forgot Password?</Text>
@@ -92,7 +103,7 @@ const LogIn = ({ navigation }) => {
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
       />
-      
+
     </SafeAreaView>
   )
 }

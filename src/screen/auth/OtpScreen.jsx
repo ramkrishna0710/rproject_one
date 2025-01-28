@@ -12,22 +12,22 @@ const OtpScreen = ({ navigation }) => {
 
   const [otp, setOtp] = useState(null);
   const [timeLeft, setTimeLeft] = useState(59);
-  const [loading, setIsLoading] = useState(false)
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const { user, setUserAfterOtpVerification, verifyOtp, otpSuccess } = useContext(AuthContext);
+
+  const { user, isLoading, verifyOtp, otpSuccess } = useContext(AuthContext);
 
   useEffect(() => {
     if (otpSuccess === true) {
-      setToastMessage('Success', 'OTP Verified Successfully!');
+      setToastMessage('OTP Verified Successfully!');
       setToastVisible(true);
-      setUserAfterOtpVerification(user);
-      navigation.navigate('DrawerNav');
+      navigation.navigate('LogIn');
     } else if (otpSuccess === false) {
-      setToastMessage('Invalid OTP', 'Invalid OTP. Please try again.');
+      setToastMessage('Invalid OTP. Please try again.');
       setToastVisible(true);
     }
-  }, [otpSuccess, navigation, user, setUserAfterOtpVerification]);
+  }, [otpSuccess, navigation, user]);
+  
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -48,9 +48,7 @@ const OtpScreen = ({ navigation }) => {
     if (!otp || otp.trim() === '') {
       return;
     }
-    setIsLoading(true)
     await verifyOtp({ otp })
-    setIsLoading(false)
   }
 
   return (
@@ -90,8 +88,8 @@ const OtpScreen = ({ navigation }) => {
       </View>
 
 
-      {loading ? (
-        <LoadingModal loading={loading} />
+      {isLoading ? (
+        <LoadingModal loading={isLoading} />
       ) : (
         <CustomButton buttonName="Verify" onPress={handleOtpVerification} />
       )}

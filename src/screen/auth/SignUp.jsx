@@ -17,25 +17,17 @@ const SignUp = ({ navigation }) => {
   const [reEnterPassword, setReEnterPassword] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false)
 
-  const { signup, signupSuccess } = useContext(AuthContext);
+  const { isLoading, signup, signupSuccess } = useContext(AuthContext);
 
   useEffect(() => {
     if (signupSuccess === true) {
-      // console.log('Signup successful, navigating to Login');
       setToastMessage('Signup successful!');
       setToastVisible(true);
-      setTimeout(() => {
-        setIsLoading(false)
-        navigation.navigate('LogIn')
-      }, 2000);
-      setIsLoading(false);
+      navigation.navigate('OtpScreen')
     } else if (signupSuccess === false) {
-      // Alert.alert('Signup Failed', 'Please try again.');
       setToastMessage('Signup failed. Please try again.');
       setToastVisible(true);
-      setIsLoading(false)
     }
   }, [signupSuccess, navigation]);
 
@@ -79,8 +71,6 @@ const SignUp = ({ navigation }) => {
       showToast('Passwords do not match.');
       return;
     }
-
-    setIsLoading(true)
 
     signup({
       name,

@@ -22,6 +22,7 @@ const HomeScreen = ({ navigation }) => {
   const [eventId, setEventId] = useState(null)
   const [video, setVideo] = useState(null)
   const [links, setLinks] = useState([]);
+  
 
   const drawerStatus = useDrawerStatus();
 

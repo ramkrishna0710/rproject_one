@@ -2,8 +2,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import React, { createContext, useEffect, useState } from 'react'
 import { BASE_URL } from '../config';
-import { Alert, ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 import CustomToast from '../components/CustomToast';
+import { useNavigation } from '@react-navigation/native';
 
 export const AuthContext = createContext();
 
@@ -14,24 +15,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [signupSuccess, setSignupSuccess] = useState(null);
   const [loginSuccess, setLoginSuccess] = useState(null);
-  const [otpSuccess, setOtpSuccess] = useState(false);
-  const [drawerUser, setDrawerUser] = useState(null);
-  const [forgotPassSuccess, setForgotPassSuccess] = useState(null)
-
+  const [otpSuccess, setOtpSuccess] = useState(null);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [forgotPassSuccess, setForgotPassSuccess] = useState(null)
 
   console.log("User ", user);
-
-  const setUserAfterOtpVerification = (user) => {
-    if (user) {
-      setDrawerUser(user);
-    } else if (user === null) {
-      setDrawerUser(null)
-    }
-    AsyncStorage.setItem('user', JSON.stringify(user));
-  };
-
 
   useEffect(() => {
     const checkUser = async () => {
@@ -39,7 +28,6 @@ export const AuthProvider = ({ children }) => {
         const storedUser = await AsyncStorage.getItem('user');
         if (storedUser) {
           setUser(JSON.parse(storedUser))
-          setDrawerUser(JSON.parse(storedUser))
         }
       } catch (error) {
         console.error('Error checking user in AsyncStorage:', error)
@@ -47,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     };
     checkUser();
   }, []);
+
 
   const signup = async ({ name, gender, mobile, email_id, address, password, ip_address }) => {
     try {
@@ -56,52 +45,60 @@ export const AuthProvider = ({ children }) => {
       console.log(response.data);
 
       if (response.data && response.data.requestStatus === 'Success') {
-        setToastMessage('Signup successful!', response.data.msg);
-        setToastVisible(true);
-        // Alert.alert('Signup Successful', response.data.msg);
+        Alert.alert('Signup Successful', response.data.msg);
         setSignupSuccess(true);
       } else {
-        setToastMessage('Signup failed. Please try again.');
-        setToastVisible(true);
+        Alert.alert('Signup Failed', response.data.msg || 'An error occurred.');
         setSignupSuccess(false);
       }
     } catch (error) {
       console.error('Error signing up:', error);
       setSignupSuccess(false);
-      // console.log('signup success false');
-      setToastMessage('Error', 'Something went wrong during signup.');
-      setSignupSuccess(true);
+      console.log('signup success false');
+      Alert.alert('Error', 'Something went wrong during signup.');
     } finally {
       setIsLoading(false);
     }
   };
 
 
-  const login = async ({ email, password }) => {
+  const login = async ({ email, password } ,navigation) => {
     try {
       setIsLoading(true)
 
       const url = `${BASE_URL}?reqAction=login&userregid=${email}&email=${email}&pass=${password}`;
+
       const response = await axios.get(url);
+
       if (response.data && response.data.requestStatus === 'Success') {
-        const userData = { ...response.data.Content[0], verified: false };
-        console.log(userData);
+        const userData = response.data.Content[0];
+        console.log("User data ", userData);
         setUser(userData);
         await AsyncStorage.setItem('user', JSON.stringify(userData));
-        <CustomToast message={`'Login Successful', ${response.data.msg}`} />
         // Alert.alert('Login Successful', response.data.msg);
+        if (userData?.status === '0') {
+          setToastMessage('Login successful, navigating to OTP screen...');
+          setToastVisible(true);
+          navigation.navigate('OtpScreen');
+        } else if (userData?.status === '1') {
+          setToastMessage('Login successful, navigating to home screen...');
+          setToastVisible(true);
+          navigation.navigate('DrawerNav');
+        } else {
+          setToastMessage('Something went wrong')
+        }  
         setLoginSuccess(true)
       } else {
-        <CustomToast message={`${response.data.message} || 'Invalid credentials.`} visible={true} />
-
+        // Alert.alert('Login Failed', response.data.message || 'Invalid credentials.');
         setLoginSuccess(false)
       }
-    } catch (error) {
+    } catch ({error, stack}) {
       console.log(`Login error: ${error}`);
+      console.log(`Login stack: ${stack}`);
       if (error.response) {
         Alert.alert('Error', error.response.data.msg || 'Something went wrong.');
       } else {
-        Alert.alert('Error', 'Network error or server unreachable.');
+        Alert.alert(error);
       }
 
       setLoginSuccess(false)
@@ -110,75 +107,108 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const forgotPassword = async ({ email }) => {
-    try {
-      setIsLoading(true);
-      const url = `${BASE_URL}?reqAction=forgotpwd&email=${email}`;
-      const response = await axios.get(url);
-
-      if (response.data?.requestStatus === 'Success') {
-        Alert.alert('Success', response.data.msg);
-        setForgotPassSuccess(true); // Updated to `true` for success
-      } else {
-        Alert.alert('Error', response.data?.msg || 'Something went wrong');
-        setForgotPassSuccess(false);
-      }
-    } catch (error) {
-      Alert.alert('Error', error.message || 'Network error occurred');
-      setForgotPassSuccess(false);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-
-
   const verifyOtp = async ({ otp }) => {
     try {
       setIsLoading(true);
-      const url = `${BASE_URL}?reqAction=userchkotp&userregid=${user?.userregid}&otp=${otp}`;
-      console.log(`OTP Verification URL: ${url}`);
+      const url = `${BASE_URL}?reqAction=userchkotp&userregid=${encodeURIComponent(user?.userregid)}&otp=${encodeURIComponent(otp)}`;
 
-      const response = await fetch(url);
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data?.msg || 'Failed to verify OTP.');
-      }
-      const otpNumber = Number(otp);
-      if (user?.otp === otpNumber) {
-        const updatedUser = { ...user };
+      console.log('OTP Verification URL:', url);
+
+      const response = await axios.get(url);
+      console.log('OTP Verification Response:', response.data);
+
+      if (response.data?.requestStatus === 'Success') {
+        const updatedUser = { ...user, verified: true };
         setUser(updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
         setOtpSuccess(true);
       } else {
+        console.log('OTP Verification Failed:', response.data);
+        Alert.alert('Error', response.data?.msg || 'Invalid OTP. Please try again.');
         setOtpSuccess(false);
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      if (error.response) {
-        Alert.alert('Error', error.response.data.msg || 'Something went wrong.');
-      } else {
-        Alert.alert('Error', 'Network error or server unreachable.');
-      }
+      console.error('OTP Verification Error:', error.message);
+      Alert.alert('Error', 'Something went wrong during OTP verification.');
       setOtpSuccess(false);
     } finally {
       setIsLoading(false);
     }
   };
 
-
-  const logout = async () => {
-    setIsLoading(true)
+  const forgotPassword = async ({ email }) => {
     try {
-      await AsyncStorage.removeItem('user')
-      setUser(null)
-      setDrawerUser(null);
+      setIsLoading(true);
+      const url = `${BASE_URL}?reqAction=forgotpwd&email=${email}`;
+      const response = await axios.get(url);
+      console.log("Response: ", response);
+
+      if (response.data?.requestStatus === 'Success') {
+        const userData = response.data.Content[0];
+        setUser(userData);
+        setToastMessage(response.data.msg);
+        setToastVisible(true);
+        setForgotPassSuccess(true);
+      } else {
+        setToastMessage(`Error: ${response.data?.msg || 'Something went wrong'}`);
+        setToastVisible(true);
+        setForgotPassSuccess(false);
+      }
+    } catch (error) {
+      setToastMessage(`Error: ${error.message || 'Network error occurred'}`);
+      setToastVisible(true);
+      setForgotPassSuccess(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // API call to change the password
+  const changePassword = async ({ userregid, newPassword, confirmPassword }) => {
+    try {
+      setIsLoading(true)
+      const url = `${BASE_URL}?reqAction=changepwd&userregid=${userregid}&newpwd=${newPassword}&confirmpwd=${confirmPassword}`;
+      console.log("Change password url ", url);
+
+      const response = await axios.get(url);
+      console.log("Response:", response.data);
+
+      if (response.data?.requestStatus === 'Success') {
+        return {
+          success: true,
+          message: response.data.msg,
+        };
+      } else {
+        setIsLoading(false)
+        throw new Error(response.data?.msg || "Something went wrong");
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message || "Network error occurred",
+      };
+    }
+    finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async (navigation) => {
+    setIsLoading(true);
+    try {
+      await AsyncStorage.removeItem('user');
+      setUser(null);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'FirstScreen' }],
+      });
     } catch (error) {
       console.log(`Logout error: ${error}`);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
+
 
   <CustomToast
     message={toastMessage}
@@ -189,8 +219,6 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider value={{
       user,
-      drawerUser,
-      setUserAfterOtpVerification,
       isLoading,
       signup,
       signupSuccess,
@@ -198,7 +226,10 @@ export const AuthProvider = ({ children }) => {
       loginSuccess,
       verifyOtp,
       otpSuccess,
-      logout
+      logout,
+      forgotPassword,
+      forgotPassSuccess,
+      changePassword
     }}>
       {children}
     </AuthContext.Provider>

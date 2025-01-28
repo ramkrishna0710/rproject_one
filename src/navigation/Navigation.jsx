@@ -29,6 +29,8 @@ import { wp } from '../helpers/common';
 import { theme } from '../constants/theme';
 import ForgotPassword from '../screen/auth/ForgotPassword';
 import ForgotOtp from '../screen/auth/ForgotOtp';
+import LocationDirection from '../screen/LocationDirection';
+import ChangePassword from '../screen/ChangePassword';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -42,7 +44,7 @@ const DrawerNav = () => {
                 drawerStyle: { width: wp(60) },
                 // drawerHideStatusBarOnOpen: true,
                 overlayColor: 'transparent',
-                sceneContainerStyle: { backgroundColor: '#59bc50' }
+                sceneContainerStyle: 'pink',
             }}
             drawerContent={(props) => <CustomDrawerContent {...props} />}
         >
@@ -62,6 +64,7 @@ const DrawerNav = () => {
             <Drawer.Screen name="DetailsEventsTab" component={DetailsEventsTab} />
             <Drawer.Screen name='MyProfile' component={MyProfile} />
             <Drawer.Screen name='DeleteAccount' component={DeleteAccount} />
+            <Drawer.Screen name='LocationDirection' component={LocationDirection}/>
         </Drawer.Navigator>
     );
 };
@@ -85,6 +88,7 @@ const AuthNav = () => {
             <Stack.Screen name="OtpScreen" component={OtpScreen} />
             <Stack.Screen name='ForgotPassword' component={ForgotPassword} />
             <Stack.Screen name='ForgotOtp' component={ForgotOtp} />
+            <Stack.Screen name='ChangePassword' component={ChangePassword} />
             <Stack.Screen name="DrawerNav" component={DrawerNav} />
         </Stack.Navigator>
     );
@@ -93,15 +97,16 @@ const AuthNav = () => {
 
 const Navigation = () => {
 
-    const { user, drawerUser } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
 
     return (
         <NavigationContainer
         // theme={{ colors: { background: '#59bc50' || '#FFFFFF' } }}
         >
             {
-                drawerUser ? <DrawerNav /> : <AuthNav />
+                user !== null ? <DrawerNav /> : <AuthNav />
             }
+            {/* <AuthNav/> */}
         </NavigationContainer>
     )
 }

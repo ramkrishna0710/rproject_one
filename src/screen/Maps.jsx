@@ -1,16 +1,34 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Image, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { hp } from '../helpers/common'
 import { theme } from '../constants/theme'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
+import MapStatic from '../components/MapStatic';
+import LoadingModal from '../components/LoadingModal';
 
 const Maps = () => {
 
   const navigation = useNavigation();
-  
+  const [loading, setLoading] = useState(true);
+  const [eventDetalis, setEventDetails] = useState([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  const openWebsite = () => {
+    Linking.openURL("https://www.kiaoval.com/").catch(err => console.error("Failed to open URL:", err));
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -19,27 +37,42 @@ const Maps = () => {
       >
         <AntDesign name="left" size={hp(3.2)} color={theme.colors.primary} />
       </TouchableOpacity>
+
+
+      {
+        loading ?
+          <LoadingModal loading={loading} /> :
+          <View style={styles.mapContainer}>
+            <MapStatic />
+          </View>
+      }
+
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <View style={styles.mapContainer}></View>
         <View style={styles.contentContainer}>
           <View style={styles.detailsLocation}>
-            <Image source={require('./../assets/image.png')} style={styles.imgContainer} />
+            <Image
+              source={{ uri: 'https://runtimeeventapp.com/hforlife/event_images/716_IMG_7808.jpg' }}
+              style={styles.imgContainer} />
             <Text style={styles.txtMain}>The Oval Cricket Ground</Text>
             <View style={styles.locationContainer}>
               {/* Icon and Link */}
+              <Entypo name="location" size={hp(3.2)} color={theme.colors.primary} />
               <Text style={styles.locationText}>The Oval Cricket Ground London, Kennington Oval, London SE11 5SS, United Kingdom.</Text>
-              <TouchableOpacity onPress={() => { }} style={styles.linkContainer}>
-                <Ionicons name="globe-outline" size={hp(3)} color={theme.colors.primary} />
-                <Text style={styles.url}>www.kiaoval.com/</Text>
+            </View>
+            <View style={styles.linkContainer}>
+              <Ionicons name="globe-outline" size={hp(3)} color={theme.colors.primary} />
+              <Text style={styles.url}>www.kiaoval.com/</Text>
+              <TouchableOpacity onPress={openWebsite}>
                 <Ionicons name="share-outline" size={hp(3)} color={theme.colors.primary} />
               </TouchableOpacity>
             </View>
           </View>
 
-          <TouchableOpacity style={styles.directionContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('LocationDirection')} style={styles.directionContainer}>
             <FontAwesome5 name="map-marked-alt" size={hp(3)} color={theme.colors.primary} />
             <Text style={styles.directionText}>Click here for directions</Text>
           </TouchableOpacity>
+
         </View>
       </ScrollView>
     </View>
@@ -58,6 +91,7 @@ const styles = StyleSheet.create({
   mapContainer: {
     width: '100%',
     height: hp(45),
+    position: 'absolute'
   },
   contentContainer: {
     marginTop: hp(2),
@@ -65,6 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     width: '94%',
+    marginTop: hp(40)
   },
   detailsLocation: {
     width: '100%',
@@ -77,6 +112,7 @@ const styles = StyleSheet.create({
     padding: theme.padding.xxs,
     backgroundColor: 'white',
     marginBottom: theme.padding.xs,
+    alignItems: 'flex-start',
   },
   imgContainer: {
     height: hp(32),
@@ -86,22 +122,26 @@ const styles = StyleSheet.create({
     marginBottom: theme.padding.xxs,
   },
   txtMain: {
-    fontSize: hp(2.5),
-    fontWeight: 'bold',
+    fontSize: hp(2.8),
+    fontWeight: '800',
     textAlign: 'center',
     marginBottom: theme.padding.xxs,
-    color: theme.colors.primary
+    color: theme.colors.lightGrey,
+    paddingHorizontal: theme.padding.xs
   },
   locationContainer: {
     marginTop: theme.padding.xs,
     alignItems: 'flex-start',
-    paddingHorizontal: theme.padding.xs,
+    // paddingHorizontal: theme.padding.xs,
+    // justifyContent: 'space-between',
+    flexDirection: 'row'
   },
   locationText: {
     fontSize: hp(2),
     color: theme.colors.lightGrey,
     fontWeight: theme.fonts.bold,
     marginBottom: theme.padding.xxs,
+    paddingHorizontal: theme.padding.xs
   },
   linkContainer: {
     flexDirection: 'row',
@@ -113,8 +153,8 @@ const styles = StyleSheet.create({
     fontSize: hp(2),
     color: theme.colors.lightGrey,
     fontWeight: theme.fonts.bold,
-    marginHorizontal: 8,
     flexShrink: 1,
+    paddingHorizontal: theme.padding.xs
   },
   directionContainer: {
     marginTop: theme.padding.xxs,

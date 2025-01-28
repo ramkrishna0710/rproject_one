@@ -21,7 +21,7 @@ const EventDetails = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false)
 
   const [eventDetalis, setEventDetails] = useState({});
-  // console.log("Event Details data main :", eventDetalis?.[0]);
+  console.log("Event Details data main :", eventDetalis?.[0]);
 
   const itemData = eventDetalis?.eventtabsData;
   // console.log("Event Details data:", itemData?.[0]);

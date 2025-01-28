@@ -12,13 +12,15 @@ const DetailsEventsTab = ({ navigation, route }) => {
     const { eventId } = route.params || {};
 
     const [eventDetalis, setEventDetails] = useState({});
+    
     const [loadingTabs, setLoadingTabs] = useState(false);
     const [loadingGallery, setLoadingGallery] = useState(false);
     const [selectedTab, setSelectedTab] = useState(null);
 
-    const itemData = eventDetalis?.eventtabsData || [];
-    const itemDataImage = eventDetalis?.eventtabImages || [];
+    const itemData = eventDetalis?.eventtabsData || [];    
+    const itemDataImage = eventDetalis?.eventtabImages || [];    
     const galleryData = itemDataImage[selectedTab?.eventtabs_id] || [];
+    
 
     useEffect(() => {
         loadEventDetails();

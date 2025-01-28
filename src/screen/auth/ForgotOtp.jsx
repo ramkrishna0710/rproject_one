@@ -6,12 +6,27 @@ import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../../context/AuthContext';
 import { theme } from '../../constants/theme';
 import LoadingModal from '../../components/LoadingModal';
+import CustomToast from '../../components/CustomToast';
 
 const ForgotOtp = ({ navigation }) => {
 
   const [otp, setOtp] = useState(null);
   const [timeLeft, setTimeLeft] = useState(59);
-  const [loading, setIsLoading] = useState(false)
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const { user, isLoading, verifyOtp, otpSuccess } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (otpSuccess === true) {
+      setToastMessage('OTP Verified Successfully!');
+      setToastVisible(true);
+      navigation.navigate('ChangePassword');
+    } else if (otpSuccess === false) {
+      setToastMessage('Invalid OTP. Please try again.');
+      setToastVisible(true);
+    }
+  }, [otpSuccess, navigation]);
 
 
   useEffect(() => {
@@ -31,12 +46,9 @@ const ForgotOtp = ({ navigation }) => {
 
   const handleOtpVerification = async () => {
     if (!otp || otp.trim() === '') {
-      Alert.alert('Error', 'Please enter a valid OTP.');
       return;
     }
-    setIsLoading(true)
-    // await verifyOtp({ otp })
-    setIsLoading(false)
+    await verifyOtp({ otp })
   }
 
   return (
@@ -58,22 +70,35 @@ const ForgotOtp = ({ navigation }) => {
       />
 
       <View style={styles.resendOtpContainer}>
-        <Text style={{fontSize: 14, color: theme.colors.white}}>Haven't received OTP yet? </Text>
-        <TouchableOpacity onPress={() => setTimeLeft(59)}>
-          <Text style={styles.resendTxt}>Resend email</Text>
-        </TouchableOpacity>
+        {timeLeft === 0 ? (
+          <>
+            <Text style={{ fontSize: 14, color: theme.colors.white }}>
+              Haven't received OTP yet?{' '}
+            </Text>
+            <TouchableOpacity onPress={() => setTimeLeft(59)}>
+              <Text style={styles.resendTxt}>Resend email</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          // You can optionally hide the resend message or just show a countdown here.
+          <View style={styles.timerContainer}>
+            <Text style={styles.timerText}>00:{formatTime(timeLeft)}</Text>
+          </View>
+        )}
       </View>
 
-      <View style={styles.timerContainer}>
-        <Text style={styles.timerText}>00:{formatTime(timeLeft)}</Text>
-      </View>
 
-
-      {loading ? (
-        <LoadingModal loading={loading} />
+      {isLoading ? (
+        <LoadingModal loading={isLoading} />
       ) : (
         <CustomButton buttonName="Verify" onPress={handleOtpVerification} />
       )}
+
+      <CustomToast
+        message={toastMessage}
+        visible={toastVisible}
+        onHide={() => setToastVisible(false)}
+      />
     </LinearGradient>
   )
 }

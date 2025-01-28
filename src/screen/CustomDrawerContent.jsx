@@ -10,7 +10,7 @@ import CustomToast from '../components/CustomToast';
 
 function CustomDrawerContent(props) {
   const { navigation } = props;
-  const { logout } = useContext(AuthContext)
+  const { user, logout } = useContext(AuthContext)
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -78,7 +78,13 @@ function CustomDrawerContent(props) {
       <LogoutModal
         modalVisible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onLogout={() => {logout()}} 
+        onLogout={() => {
+          logout();
+          setModalVisible(false);
+          // if (user === null) {
+          //   navigation.navigate('First')
+          // }
+        }}
       />
     </View>
   );
@@ -95,7 +101,7 @@ const styles = StyleSheet.create({
   },
   drawerItemContainer: {
     flexDirection: 'row',
-    alignItems: 'center',    
+    alignItems: 'center',
   },
   icon: {
     marginRight: 10,
