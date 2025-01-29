@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   confirmButton: {
-    backgroundColor: theme.colors.primary,
+    backgroundColor: 'red',
   },
   confirmText: {
     color: "#fff",

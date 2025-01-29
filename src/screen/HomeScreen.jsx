@@ -8,8 +8,11 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import VideoSlider from '../components/VideoSlider';
 import { fetchAgenda, fetchEventDetails, fetchSpeakers, fetchVideos } from '../helpers/api';
 import LoadingModal from '../components/LoadingModal';
-import DrawerScreenWrapper from '../components/DrawerScreenWrapper';
 import { useDrawerStatus } from '@react-navigation/drawer';
+import Header from '../components/Header';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Overlay from '../components/Overlay';
+import Drawer from '../components/Drawer';
 
 
 const HomeScreen = ({ navigation }) => {
@@ -22,7 +25,11 @@ const HomeScreen = ({ navigation }) => {
   const [eventId, setEventId] = useState(null)
   const [video, setVideo] = useState(null)
   const [links, setLinks] = useState([]);
-  
+
+  const active = useSharedValue(false)
+  const progress = useDerivedValue(() => {
+    return withTiming(active.value ? 1 : 0);
+  })
 
   const drawerStatus = useDrawerStatus();
 
@@ -118,7 +125,6 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
-
   if (error) {
     return (
       <View style={styles.centered}>
@@ -127,31 +133,41 @@ const HomeScreen = ({ navigation }) => {
     );
   }
 
+  const animatedStyle = useAnimatedStyle(() => {
+    const rotateY = interpolate(
+      progress.value,
+      [0, 1],
+      [0, -20],
+      Extrapolation.CLAMP,
+    )
+    return {
+
+      transform: [
+        { perspective: 1000 },
+        { scale: active.value ? withTiming(0.8) : withTiming(1) }, {
+          translateX: active.value ? withSpring(240) : withTiming(0)
+        },
+      ],
+      borderRadius: active.value ? withTiming(20) : withTiming(0)
+    }
+  })
+
   const firstSpeaker = speakers[0];
 
   return (
-    <DrawerScreenWrapper>
-      <View style={styles.container}>
+    <>
+    <Drawer active={active}/>
+      <Animated.View style={[styles.container, animatedStyle]}>
         <StatusBar backgroundColor={theme.colors.primary} />
-        <View style={styles.iconContainer}>
-          <TouchableOpacity onPress={() => navigation.toggleDrawer()}>
-            <Icon
-              name={drawerStatus === 'open' ? 'arrow-back' : 'menu'}
-              size={35}
-              color="white"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { navigation.navigate('Notification') }}>
-            <Icon name="notifications" size={35} color="white" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.divider} />
+
         {
           loading ? (
             <LoadingModal loading={loading} />
           ) : (
             <>
+              <Header active={active} navigation={navigation} />
 
+              <View style={styles.divider} />
               <ScrollView>
 
                 {/* Header */}
@@ -237,8 +253,9 @@ const HomeScreen = ({ navigation }) => {
               </ScrollView>
             </>
           )}
-      </View>
-    </DrawerScreenWrapper>
+        <Overlay active={active} />
+      </Animated.View>
+    </>
   )
 }
 
@@ -261,12 +278,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 0.4,
     backgroundColor: '#333',
-    borderRadius: 5, 
-    shadowColor: '#000',  
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.4,  
-    shadowRadius: 8,  
-    elevation: 8, 
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    elevation: 8,
   },
   headerContainer: {
     backgroundColor: theme.colors.primary,

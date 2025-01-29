@@ -5,14 +5,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { hp } from '../helpers/common';
 import { theme } from '../constants/theme';
 
-const MyProfile = () => {
+const MyProfile = ({ navigation }) => {
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
         colors={['#7fdb56', '#5bbe51', '#2c9c4a']}
         style={styles.gradientStyle}
       >
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Entypo name="chevron-left" size={35} color={theme.colors.white} />
         </TouchableOpacity>
         <Text style={styles.headerTxt}>My Profile</Text>

@@ -9,8 +9,6 @@ import OtpScreen from '../screen/auth/OtpScreen';
 import MyProfile from '../screen/MyProfile';
 import { AuthContext } from '../context/AuthContext';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import CustomDrawerContent from '../screen/CustomDrawerContent';
-import EventDetails from '../screen/EventDetailsScreen';
 import AgendaScreen from '../screen/Agenda';
 import Speakers from '../screen/Speakers';
 import Maps from '../screen/Maps';
@@ -25,8 +23,6 @@ import QandA from '../screen/QandA';
 import Notification from '../screen/Notification';
 import DetailsEventsTab from '../screen/DetailsEventsTab';
 import DeleteAccount from '../screen/DeleteAccount';
-import { wp } from '../helpers/common';
-import { theme } from '../constants/theme';
 import ForgotPassword from '../screen/auth/ForgotPassword';
 import ForgotOtp from '../screen/auth/ForgotOtp';
 import LocationDirection from '../screen/LocationDirection';
@@ -39,14 +35,10 @@ const DrawerNav = () => {
     return (
         <Drawer.Navigator
             screenOptions={{
-                drawerType: 'slide',
                 headerShown: false,
-                drawerStyle: { width: wp(60) },
-                // drawerHideStatusBarOnOpen: true,
-                overlayColor: 'transparent',
-                sceneContainerStyle: 'pink',
+                swipeEnabled: false,
+                drawerType: 'back',
             }}
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
         >
             <Drawer.Screen name="Home" component={HomeScreen} />
             <Drawer.Screen name="AgendaScreen" component={AgendaScreen} />
@@ -64,7 +56,7 @@ const DrawerNav = () => {
             <Drawer.Screen name="DetailsEventsTab" component={DetailsEventsTab} />
             <Drawer.Screen name='MyProfile' component={MyProfile} />
             <Drawer.Screen name='DeleteAccount' component={DeleteAccount} />
-            <Drawer.Screen name='LocationDirection' component={LocationDirection}/>
+            <Drawer.Screen name='LocationDirection' component={LocationDirection} />
         </Drawer.Navigator>
     );
 };

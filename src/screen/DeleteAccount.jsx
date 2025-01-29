@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { theme } from '../constants/theme';
 import { hp } from '../helpers/common';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustomButton from '../components/CustomButton';
 import ModalDeleteAccount from '../components/ModalDeleteAccount';
+import { AuthContext } from '../context/AuthContext';
 
 const DeleteAccount = ({ navigation }) => {
     const [isModalVisible, setModalVisible] = useState(false);
 
+    const { user, deleteAccount } = useContext(AuthContext);
     const handleDeleteAccount = () => {
-        // Show modal when "Delete Account" is clicked
         setModalVisible(true);
     };
 
     const closeModal = () => {
+        setModalVisible(false);
+    };
+
+    const onDeleteAcc = () => {
+        // if (user) {
+        //     deleteAccount({ user }, navigation);
+        // } else {
+        //     console.log('No user data to delete');
+        // }
         setModalVisible(false);
     };
 
@@ -41,18 +51,20 @@ const DeleteAccount = ({ navigation }) => {
                     buttonName={'Privacy Policy'}
                     backgroundColor={theme.colors.primary}
                     color={theme.colors.white}
-                    onPress={() => navigation.navigate('PrivacyPolicy')}
+                    onPress={() => { }}
+                    borderColor={theme.colors.primary}
                 />
                 <CustomButton
                     style={styles.btn}
                     buttonName={'Delete Account'}
                     backgroundColor={'red'}
                     color={theme.colors.white}
-                    onPress={handleDeleteAccount} 
+                    onPress={handleDeleteAccount}
+                    borderColor={'red'}
                 />
             </View>
 
-            <ModalDeleteAccount modalVisible={isModalVisible} onClose={closeModal} onDeleteAcc={() => {}}/>
+            <ModalDeleteAccount modalVisible={isModalVisible} onClose={closeModal} onDeleteAcc={onDeleteAcc} />
         </View>
     );
 };

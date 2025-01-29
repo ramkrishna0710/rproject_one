@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator }
 import { theme } from '../constants/theme';
 import { hp } from '../helpers/common';
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import { useNavigation } from '@react-navigation/native';
 import { fetchAgendaSession } from '../helpers/api';
 import LoadingModal from '../components/LoadingModal';
 import SessionScreenModal from './SessionScreenModal';

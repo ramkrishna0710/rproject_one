@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
   };
 
 
-  const login = async ({ email, password } ,navigation) => {
+  const login = async ({ email, password }, navigation) => {
     try {
       setIsLoading(true)
 
@@ -86,13 +86,13 @@ export const AuthProvider = ({ children }) => {
           navigation.navigate('DrawerNav');
         } else {
           setToastMessage('Something went wrong')
-        }  
+        }
         setLoginSuccess(true)
       } else {
         // Alert.alert('Login Failed', response.data.message || 'Invalid credentials.');
         setLoginSuccess(false)
       }
-    } catch ({error, stack}) {
+    } catch ({ error, stack }) {
       console.log(`Login error: ${error}`);
       console.log(`Login stack: ${stack}`);
       if (error.response) {
@@ -209,6 +209,38 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const deleteAccount = async ({user}, navigation) => {
+    if (!user?.userregid) {
+      console.log('No user data available');
+      return; // Exit if user data is not available
+    }
+
+    setIsLoading(true);
+    try {
+      const url = `${BASE_URL}?reqAction=userdelete&userregid=${user.userregid}`;
+      console.log("Delete account URL:", url);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        console.log('Account deleted successfully');
+        navigation.navigate('First');
+      } else {
+        console.log('Failed to delete account');
+      }
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
 
   <CustomToast
     message={toastMessage}
@@ -229,7 +261,8 @@ export const AuthProvider = ({ children }) => {
       logout,
       forgotPassword,
       forgotPassSuccess,
-      changePassword
+      changePassword,
+      deleteAccount
     }}>
       {children}
     </AuthContext.Provider>
