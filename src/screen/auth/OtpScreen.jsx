@@ -26,8 +26,8 @@ const OtpScreen = ({ navigation }) => {
       setToastMessage('Invalid OTP. Please try again.');
       setToastVisible(true);
     }
-  }, [otpSuccess, navigation, user]);
-  
+  }, [otpSuccess, navigation]);
+
 
   useEffect(() => {
     if (timeLeft > 0) {
@@ -48,7 +48,7 @@ const OtpScreen = ({ navigation }) => {
     if (!otp || otp.trim() === '') {
       return;
     }
-    await verifyOtp({ otp })
+    await verifyOtp({ userregid: user?.userregid, otp })
   }
 
   return (
@@ -75,7 +75,10 @@ const OtpScreen = ({ navigation }) => {
             <Text style={{ fontSize: 14, color: theme.colors.white }}>
               Haven't received OTP yet?{' '}
             </Text>
-            <TouchableOpacity onPress={() => setTimeLeft(59)}>
+            <TouchableOpacity onPress={() => {
+              setTimeLeft(59);
+              handleOtpVerification();
+            }}>
               <Text style={styles.resendTxt}>Resend email</Text>
             </TouchableOpacity>
           </>

@@ -4,7 +4,6 @@ import React, { createContext, useEffect, useState } from 'react'
 import { BASE_URL } from '../config';
 import { Alert } from 'react-native';
 import CustomToast from '../components/CustomToast';
-import { useNavigation } from '@react-navigation/native';
 
 export const AuthContext = createContext();
 
@@ -13,6 +12,7 @@ export const AuthProvider = ({ children }) => {
 
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState(null);
+  const [otpUser, setOtpUser] = useState(null)
   const [signupSuccess, setSignupSuccess] = useState(null);
   const [loginSuccess, setLoginSuccess] = useState(null);
   const [otpSuccess, setOtpSuccess] = useState(null);
@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
   const [forgotPassSuccess, setForgotPassSuccess] = useState(null)
 
   console.log("User ", user);
+  console.log("OTP User ", otpUser);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -107,10 +108,10 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
-  const verifyOtp = async ({ otp }) => {
+  const verifyOtp = async ({ userregid, otp }) => {
     try {
       setIsLoading(true);
-      const url = `${BASE_URL}?reqAction=userchkotp&userregid=${encodeURIComponent(user?.userregid)}&otp=${encodeURIComponent(otp)}`;
+      const url = `${BASE_URL}?reqAction=userchkotp&userregid=${encodeURIComponent(userregid)}&otp=${encodeURIComponent(otp)}`;
 
       console.log('OTP Verification URL:', url);
 
@@ -118,8 +119,8 @@ export const AuthProvider = ({ children }) => {
       console.log('OTP Verification Response:', response.data);
 
       if (response.data?.requestStatus === 'Success') {
-        const updatedUser = { ...user, verified: true };
-        setUser(updatedUser);
+        const updatedUser = { ...otpUser };
+        setOtpUser(updatedUser);
         await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
         setOtpSuccess(true);
       } else {
@@ -136,7 +137,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const forgotPassword = async ({ email }) => {
+  const forgotPassword = async ({ email }, navigation) => {
+    console.log("Forgot Navigation ", navigation);
+
     try {
       setIsLoading(true);
       const url = `${BASE_URL}?reqAction=forgotpwd&email=${email}`;
@@ -145,10 +148,17 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data?.requestStatus === 'Success') {
         const userData = response.data.Content[0];
-        setUser(userData);
+        setOtpUser(userData);
         setToastMessage(response.data.msg);
         setToastVisible(true);
         setForgotPassSuccess(true);
+        if (forgotPassSuccess === true) {
+          console.log("Success navigate forgot otp");
+          navigation.navigate('ForgotOtp');
+        } else if (forgotPassSuccess === false) {
+          setToastMessage('Failed to send OTP');
+          setToastVisible(true);
+        }
       } else {
         setToastMessage(`Error: ${response.data?.msg || 'Something went wrong'}`);
         setToastVisible(true);
@@ -164,7 +174,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // API call to change the password
-  const changePassword = async ({ userregid, newPassword, confirmPassword }) => {
+  const changePassword = async ({ userregid, newPassword, confirmPassword }, navigation) => {
     try {
       setIsLoading(true)
       const url = `${BASE_URL}?reqAction=changepwd&userregid=${userregid}&newpwd=${newPassword}&confirmpwd=${confirmPassword}`;
@@ -174,6 +184,7 @@ export const AuthProvider = ({ children }) => {
       console.log("Response:", response.data);
 
       if (response.data?.requestStatus === 'Success') {
+        navigation.navigate('LogIn');
         return {
           success: true,
           message: response.data.msg,
@@ -198,6 +209,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await AsyncStorage.removeItem('user');
       setUser(null);
+      setOtpUser(null);
       navigation.reset({
         index: 0,
         routes: [{ name: 'FirstScreen' }],
@@ -209,7 +221,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const deleteAccount = async ({user}, navigation) => {
+  const deleteAccount = async ({ user }, navigation) => {
     if (!user?.userregid) {
       console.log('No user data available');
       return; // Exit if user data is not available
@@ -259,6 +271,7 @@ export const AuthProvider = ({ children }) => {
       verifyOtp,
       otpSuccess,
       logout,
+      otpUser,
       forgotPassword,
       forgotPassSuccess,
       changePassword,

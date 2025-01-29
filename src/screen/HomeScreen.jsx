@@ -145,7 +145,7 @@ const HomeScreen = ({ navigation }) => {
       transform: [
         { perspective: 1000 },
         { scale: active.value ? withTiming(0.8) : withTiming(1) }, {
-          translateX: active.value ? withSpring(240) : withTiming(0)
+          translateX: active.value ? withTiming(240) : withTiming(0)
         },
       ],
       borderRadius: active.value ? withTiming(20) : withTiming(0)

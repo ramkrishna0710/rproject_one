@@ -18,15 +18,15 @@ const ForgotPassword = ({ navigation }) => {
 
     const { isLoading, forgotPassword, forgotPassSuccess } = useContext(AuthContext);
 
-    useEffect(() => {
-        if (forgotPassSuccess === true) {
-            console.log("Success navigate forgot otp");
-            navigation.navigate('ForgotOtp');
-        } else if (forgotPassSuccess === false) {
-            setToastMessage('Failed to send OTP');
-            setToastVisible(true);
-        }
-    }, [forgotPassSuccess, navigation]);
+    // useEffect(() => {
+    //     if (forgotPassSuccess === true) {
+    //         console.log("Success navigate forgot otp");
+    //         navigation.navigate('ForgotOtp');
+    //     } else if (forgotPassSuccess === false) {
+    //         setToastMessage('Failed to send OTP');
+    //         setToastVisible(true);
+    //     }
+    // }, [forgotPassSuccess, navigation]);
 
     const handleForgotPassword = async () => {
         if (!email) {
@@ -35,7 +35,7 @@ const ForgotPassword = ({ navigation }) => {
             return;
         }
 
-        await forgotPassword({ email });
+        await forgotPassword({ email }, navigation);
     };
 
     return (

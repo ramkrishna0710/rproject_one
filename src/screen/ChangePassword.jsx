@@ -8,7 +8,7 @@ import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 
 const ChangePassword = ({ navigation }) => {
-  const { user, changePassword, isLoading } = useContext(AuthContext);
+  const { otpUser, changePassword, isLoading } = useContext(AuthContext);
   const [password, setPassword] = useState('');
   const [reEnterPass, setReEnterPass] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
@@ -32,17 +32,17 @@ const ChangePassword = ({ navigation }) => {
     }
 
     const { success, message } = await changePassword({
-      userregid: user?.userregid,
+      userregid: otpUser?.userregid,
       newPassword: password,
       confirmPassword: reEnterPass,
-    });
+    }, navigation);
 
     setToastMessage(message);
     setToastVisible(true);
 
-    if (success) {
-      navigation.navigate('LogIn');
-    }
+    // if (success) {
+    //   navigation.navigate('LogIn');
+    // }
   };
 
   return (

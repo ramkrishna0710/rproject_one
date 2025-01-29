@@ -11,12 +11,12 @@ import { theme } from '../constants/theme'
 
 const Drawer = ({ active }) => {
     const navigation = useNavigation();
-    const { user, logout } = useContext(AuthContext);
+    const { isLoading, logout } = useContext(AuthContext);
     const [modalVisible, setModalVisible] = useState(false);
 
     return (
         <View style={styles.container}>
-        <StatusBar backgroundColor={'#2c9c4a'}/>
+            <StatusBar backgroundColor={'#2c9c4a'} />
             <LinearGradient
                 colors={['#2c9c4a', '#5bbe51', '#7fdb56']}
                 style={{ flex: 1 }}

@@ -15,7 +15,7 @@ const ForgotOtp = ({ navigation }) => {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  const { user, isLoading, verifyOtp, otpSuccess } = useContext(AuthContext);
+  const { otpUser, isLoading, verifyOtp, otpSuccess } = useContext(AuthContext);
 
   useEffect(() => {
     if (otpSuccess === true) {
@@ -48,7 +48,7 @@ const ForgotOtp = ({ navigation }) => {
     if (!otp || otp.trim() === '') {
       return;
     }
-    await verifyOtp({ otp })
+    await verifyOtp({ userregid: otpUser?.userregid, otp })
   }
 
   return (
@@ -75,7 +75,11 @@ const ForgotOtp = ({ navigation }) => {
             <Text style={{ fontSize: 14, color: theme.colors.white }}>
               Haven't received OTP yet?{' '}
             </Text>
-            <TouchableOpacity onPress={() => setTimeLeft(59)}>
+            <TouchableOpacity onPress={() => {
+              setTimeLeft(59);
+              handleOtpVerification();
+            }}
+            >
               <Text style={styles.resendTxt}>Resend email</Text>
             </TouchableOpacity>
           </>
