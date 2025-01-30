@@ -1,6 +1,5 @@
-import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
-import LinearGradient from 'react-native-linear-gradient'
 import CustomButton from '../../components/CustomButton'
 import { AuthContext } from '../../context/AuthContext'
 import LoadingModal from '../../components/LoadingModal'
@@ -48,15 +47,18 @@ const LogIn = ({ navigation }) => {
       setToastVisible(true);
       return;
     }
-     login({ email, password }, navigation);
-    
+    login({ email, password }, navigation);
+
   };
 
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
-      <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <ImageBackground
+        source={require('../../assets/login_back.png')}
+        style={styles.container}
+      >
         <View style={styles.txtContainer}>
           <Text style={styles.firstTxt}>HYDROGEN</Text>
           <Text style={styles.lastTxt}>FOR LIFE</Text>
@@ -96,7 +98,7 @@ const LogIn = ({ navigation }) => {
             onPress={handleLogin}
           />
         )}
-      </LinearGradient>
+      </ImageBackground>
 
       <CustomToast
         message={toastMessage}
@@ -114,7 +116,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    resizeMode: 'cover'
   },
   txtContainer: {
     alignItems: 'center'

@@ -12,10 +12,12 @@ const MyProfile = ({ navigation }) => {
         colors={['#7fdb56', '#5bbe51', '#2c9c4a']}
         style={styles.gradientStyle}
       >
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Entypo name="chevron-left" size={35} color={theme.colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerTxt}>My Profile</Text>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+            <Entypo name="chevron-left" size={35} color={theme.colors.white} style={styles.icon} />
+          </TouchableOpacity>
+          <Text style={styles.headerTxt}>My Profile</Text>
+        </View>
       </LinearGradient>
 
       <Image
@@ -58,17 +60,26 @@ export default MyProfile
 
 const styles = StyleSheet.create({
   gradientStyle: {
-    height: hp(25),
+    height: hp(30),
     borderBottomLeftRadius: theme.radius.xxl,
     borderBottomRightRadius: theme.radius.xxl,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: theme.padding.xxs,
+    paddingVertical: theme.padding.xxl,
+    marginTop: theme.padding.xl
+  },
+  icon: {
+    // position: 'absolute',
+    // padding: theme.padding.xxs,
   },
   headerTxt: {
     color: theme.colors.white,
     fontSize: hp(3.5),
     fontWeight: theme.fonts.bold,
-    alignItems: 'center',
-    alignSelf: 'center',
-    paddingVertical: theme.padding.xxl
+    paddingLeft: hp(7.6)
   },
   eventImg: {
     height: hp(26),
@@ -90,7 +101,7 @@ const styles = StyleSheet.create({
     fontSize: hp(2.4),
     fontWeight: theme.fonts.bold,
     color: theme.colors.lightGrey,
-    paddingHorizontal: theme.padding.md,
+    paddingHorizontal: theme.padding.xl,
     marginTop: hp(19.2),
   },
   verDivider: {
@@ -127,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: hp(2),
     fontWeight: theme.fonts.bold,
     color: theme.colors.lightGrey,
+    paddingLeft: theme.padding.xxl
   },
   regTxt: {
     color: theme.colors.primary,

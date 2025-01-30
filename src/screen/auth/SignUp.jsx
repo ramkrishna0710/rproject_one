@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Text, Alert, ActivityIndicator } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { SafeAreaView, StyleSheet, Text, Alert, ActivityIndicator, ImageBackground, StatusBar } from 'react-native';
 import CustomTextInput from '../../components/CustomTextInput';
 import CustomButton from '../../components/CustomButton';
 import { AuthContext } from '../../context/AuthContext';
@@ -84,30 +83,32 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
-        <Text style={styles.headerTxt}>Enter your details to register</Text>
+    <ImageBackground
+      source={require('../../assets/login_back.png')}
+      style={styles.container}
+    >
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <Text style={styles.headerTxt}>Enter your details to register</Text>
 
-        <CustomTextInput placeholderText="Enter name" value={name} onChangeText={setName} />
-        <CustomTextInput placeholderText="Enter gender" value={gender} onChangeText={setGender} />
-        <CustomTextInput placeholderText="Enter mobile" keyboardType='number-pad' value={mobile} onChangeText={setMobile} />
-        <CustomTextInput placeholderText="Address" value={address} onChangeText={setAddress} />
-        <CustomTextInput placeholderText="Email address" keyboardType={'email-address'} value={email} onChangeText={setEmail} />
-        <CustomTextInput placeholderText="Create password" value={password} onChangeText={setPassword} secureTextEntry />
-        <CustomTextInput placeholderText="Re-enter password" value={reEnterPassword} onChangeText={setReEnterPassword} secureTextEntry />
+      <CustomTextInput placeholderText="Enter name" value={name} onChangeText={setName} />
+      <CustomTextInput placeholderText="Enter gender" value={gender} onChangeText={setGender} />
+      <CustomTextInput placeholderText="Enter mobile" keyboardType='number-pad' value={mobile} onChangeText={setMobile} />
+      <CustomTextInput placeholderText="Address" value={address} onChangeText={setAddress} />
+      <CustomTextInput placeholderText="Email address" keyboardType={'email-address'} value={email} onChangeText={setEmail} />
+      <CustomTextInput placeholderText="Create password" value={password} onChangeText={setPassword} secureTextEntry />
+      <CustomTextInput placeholderText="Re-enter password" value={reEnterPassword} onChangeText={setReEnterPassword} secureTextEntry />
 
-        {isLoading ? (
-          <LoadingModal loading={isLoading} />
-        ) : (
-          <CustomButton buttonName="Submit" onPress={handleSignUp} />
-        )}
-      </LinearGradient>
+      {isLoading ? (
+        <LoadingModal loading={isLoading} />
+      ) : (
+        <CustomButton buttonName="Submit" onPress={handleSignUp} />
+      )}
       <CustomToast
         message={toastMessage}
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
       />
-    </SafeAreaView>
+    </ImageBackground>
   );
 };
 
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    resizeMode: 'cover'
   },
   headerTxt: {
     fontSize: 18,

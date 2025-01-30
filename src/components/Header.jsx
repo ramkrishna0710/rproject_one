@@ -6,7 +6,7 @@ import { theme } from '../constants/theme';
 const Header = ({ navigation, active }) => {
     
     return (
-        <View style={styles.iconContainer}>
+        <View style={[styles.iconContainer, active.value === true ? {borderTopLeftRadius: 16} : {borderTopLeftRadius: 0}]}>
             <TouchableOpacity onPress={() =>{
                 active.value = true;
             }}>
@@ -32,6 +32,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: theme.colors.primary,
         paddingHorizontal: theme.padding.xxs,
-        paddingBottom: theme.padding.xxs
+        paddingBottom: theme.padding.xxs,
+        paddingVertical: theme.padding.xl
     },
 })

@@ -1,8 +1,7 @@
-import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { ImageBackground, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useContext, useEffect, useState } from 'react'
 import CustomTextInput from '../../components/CustomTextInput'
 import CustomButton from '../../components/CustomButton';
-import LinearGradient from 'react-native-linear-gradient';
 import { AuthContext } from '../../context/AuthContext';
 import { theme } from '../../constants/theme';
 import LoadingModal from '../../components/LoadingModal';
@@ -52,7 +51,11 @@ const OtpScreen = ({ navigation }) => {
   }
 
   return (
-    <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/login_back.png')}
+      style={styles.container}
+    >
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
       <View style={styles.txtContainer}>
         <Text style={styles.firstTxt}>HYDROGEN</Text>
         <Text style={styles.lastTxt}>FOR LIFE</Text>
@@ -102,7 +105,7 @@ const OtpScreen = ({ navigation }) => {
         visible={toastVisible}
         onHide={() => setToastVisible(false)}
       />
-    </LinearGradient>
+    </ImageBackground>
   )
 }
 

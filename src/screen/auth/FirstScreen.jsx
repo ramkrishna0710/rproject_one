@@ -1,15 +1,16 @@
-import { SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
+import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import LinearGradient from 'react-native-linear-gradient'
 import CustomButton from '../../components/CustomButton'
 
 const FirstScreen = ({ navigation }) => {
   console.warn("");
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar backgroundColor={'#27974b'} />
-      <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
-
+      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <ImageBackground
+        source={require('../../assets/login_back.png')}
+        style={styles.container}
+      >
         <View style={styles.txtContainer}>
           <Text style={styles.firstTxt}>HYDROGEN</Text>
           <Text style={styles.lastTxt}>FOR LIFE</Text>
@@ -18,11 +19,11 @@ const FirstScreen = ({ navigation }) => {
         <CustomButton style={styles.logInContainer} buttonName="Log in" onPress={() => {
           navigation.navigate('LogIn')
         }} />
-        <CustomButton style={styles.registerContainer} buttonName="Register Now" onPress={() => { 
+        <CustomButton style={styles.registerContainer} buttonName="Register Now" onPress={() => {
           navigation.navigate('SignUp')
-         }} />
+        }} />
 
-      </LinearGradient>
+      </ImageBackground>
     </SafeAreaView>
   )
 }

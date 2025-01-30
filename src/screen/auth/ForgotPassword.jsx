@@ -1,15 +1,12 @@
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, StatusBar, ImageBackground } from 'react-native';
 import React, { useContext, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import LoadingModal from '../../components/LoadingModal';
 import CustomButton from '../../components/CustomButton';
 import { AuthContext } from '../../context/AuthContext';
 import { theme } from '../../constants/theme';
 import { hp } from '../../helpers/common';
 import CustomToast from '../../components/CustomToast';
-import axios from 'axios';
-import { BASE_URL } from '../../config';
 
 const ForgotPassword = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -39,43 +36,45 @@ const ForgotPassword = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <LinearGradient colors={['#27974b', '#4ab24f', '#72d054']} style={styles.container}>
-                <View style={styles.txtContainer}>
-                    <Text style={styles.firstTxt}>HYDROGEN</Text>
-                    <Text style={styles.lastTxt}>FOR LIFE</Text>
-                </View>
+        <ImageBackground
+            source={require('../../assets/login_back.png')}
+            style={styles.container}
+        >
+            <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+            <View style={styles.txtContainer}>
+                <Text style={styles.firstTxt}>HYDROGEN</Text>
+                <Text style={styles.lastTxt}>FOR LIFE</Text>
+            </View>
 
-                <Text style={styles.txt}>
-                    Enter your registered email address below to receive a one-time password
-                </Text>
+            <Text style={styles.txt}>
+                Enter your registered email address below to receive a one-time password
+            </Text>
 
-                <TextInput
-                    placeholder="Please enter your registered email"
-                    value={email}
-                    style={styles.emailInput}
-                    keyboardType="email-address"
-                    placeholderTextColor="#fff"
-                    onChangeText={(text) => setEmail(text)}
+            <TextInput
+                placeholder="Please enter your registered email"
+                value={email}
+                style={styles.emailInput}
+                keyboardType="email-address"
+                placeholderTextColor="#fff"
+                onChangeText={(text) => setEmail(text)}
+            />
+
+            {isLoading ? (
+                <LoadingModal loading={isLoading} />
+            ) : (
+                <CustomButton
+                    style={styles.submitContainer}
+                    buttonName="Submit"
+                    onPress={handleForgotPassword}
+                    color={theme.colors.primary}
                 />
-
-                {isLoading ? (
-                    <LoadingModal loading={isLoading} />
-                ) : (
-                    <CustomButton
-                        style={styles.submitContainer}
-                        buttonName="Submit"
-                        onPress={handleForgotPassword}
-                        color={theme.colors.primary}
-                    />
-                )}
-            </LinearGradient>
+            )}
             <CustomToast
                 message={toastMessage}
                 visible={toastVisible}
                 onHide={() => setToastVisible(false)}
             />
-        </SafeAreaView>
+        </ImageBackground>
     );
 };
 
@@ -86,6 +85,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        resizeMode: 'cover'
     },
     txtContainer: {
         alignItems: 'center',

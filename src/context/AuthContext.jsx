@@ -86,7 +86,8 @@ export const AuthProvider = ({ children }) => {
           setToastVisible(true);
           navigation.navigate('DrawerNav');
         } else {
-          setToastMessage('Something went wrong')
+          setToastMessage('Something went wrong');
+          setToastVisible(true)
         }
         setLoginSuccess(true)
       } else {

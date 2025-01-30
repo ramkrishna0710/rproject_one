@@ -148,7 +148,7 @@ const HomeScreen = ({ navigation }) => {
           translateX: active.value ? withTiming(240) : withTiming(0)
         },
       ],
-      borderRadius: active.value ? withTiming(20) : withTiming(0)
+      borderRadius: active.value ? withTiming(16) : withTiming(0)
     }
   })
 
@@ -158,7 +158,7 @@ const HomeScreen = ({ navigation }) => {
     <>
     <Drawer active={active}/>
       <Animated.View style={[styles.container, animatedStyle]}>
-        <StatusBar backgroundColor={theme.colors.primary} />
+        <StatusBar translucent backgroundColor={'transparent'} barStyle="light-content" />
 
         {
           loading ? (
