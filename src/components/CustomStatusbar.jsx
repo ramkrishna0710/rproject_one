@@ -1,13 +1,20 @@
-import { View, StatusBar, Platform } from 'react-native';
 import React from 'react';
+import { Platform, StatusBar } from 'react-native';
 
-const CustomStatusbar = () => {
+const CustomStatusbar = ({
+  hidden = false,
+  barStyle = 'dark-content',
+}) => {
+  const isIOS = Platform.OS === 'ios';
+
   return (
-    <View>
-      {Platform.OS === 'android' ? (
-        <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
-      ) : null}
-    </View>
+    <StatusBar
+      animated={true}
+      backgroundColor={Platform.OS === 'android' ? 'transparent' : undefined}
+      translucent={Platform.OS === 'android'}
+      barStyle={barStyle}
+      hidden={isIOS ? hidden : false}
+    />
   );
 };
 
