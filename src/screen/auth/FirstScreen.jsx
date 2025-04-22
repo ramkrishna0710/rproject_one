@@ -1,12 +1,12 @@
 import { ImageBackground, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import CustomButton from '../../components/CustomButton'
+import CustomStatusbar from '../../components/CustomStatusbar';
 
 const FirstScreen = ({ navigation }) => {
-  console.warn("");
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <CustomStatusbar/>
       <ImageBackground
         source={require('../../assets/login_back.png')}
         style={styles.container}

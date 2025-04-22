@@ -73,10 +73,9 @@ export const AuthProvider = ({ children }) => {
 
       if (response.data && response.data.requestStatus === 'Success') {
         const userData = response.data.Content[0];
-        console.log("User data ", userData);
+        // console.log("User data ", userData);
         setUser(userData);
         await AsyncStorage.setItem('user', JSON.stringify(userData));
-        // Alert.alert('Login Successful', response.data.msg);
         if (userData?.status === '0') {
           setToastMessage('Login successful, navigating to OTP screen...');
           setToastVisible(true);
@@ -93,6 +92,7 @@ export const AuthProvider = ({ children }) => {
       } else {
         // Alert.alert('Login Failed', response.data.message || 'Invalid credentials.');
         setLoginSuccess(false)
+        setToastVisible(false)
       }
     } catch ({ error, stack }) {
       console.log(`Login error: ${error}`);

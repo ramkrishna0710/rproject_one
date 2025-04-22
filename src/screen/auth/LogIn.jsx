@@ -4,6 +4,8 @@ import CustomButton from '../../components/CustomButton'
 import { AuthContext } from '../../context/AuthContext'
 import LoadingModal from '../../components/LoadingModal'
 import CustomToast from '../../components/CustomToast'
+import { deviceWidth, hp } from '../../helpers/common'
+import CustomStatusbar from '../../components/CustomStatusbar'
 
 const LogIn = ({ navigation }) => {
 
@@ -15,7 +17,7 @@ const LogIn = ({ navigation }) => {
 
   const { user, login, isLoading, loginSuccess } = useContext(AuthContext);
 
-  console.log("Login log ", user);
+  // console.log("Login log ", user);
 
 
   // useEffect(() => {
@@ -37,11 +39,21 @@ const LogIn = ({ navigation }) => {
 
 
   const handleLogin = () => {
+    const isValidEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
     if (!email) {
       setToastMessage('Email cannot be empty!');
       setToastVisible(true);
       return;
+    } else if (!isValidEmail(email)) {
+      setToastMessage('Please enter a valid email address!');
+      setToastVisible(true);
+      return;
     }
+
     if (!password) {
       setToastMessage('Password cannot be empty!');
       setToastVisible(true);
@@ -54,7 +66,7 @@ const LogIn = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar translucent backgroundColor="transparent" barStyle="dark-content" />
+      <CustomStatusbar />
       <ImageBackground
         source={require('../../assets/login_back.png')}
         style={styles.container}
@@ -71,6 +83,7 @@ const LogIn = ({ navigation }) => {
           keyboardType='email-address'
           placeholderTextColor="#fff"
           onChangeText={text => setEmail(text)}
+          autoCapitalize='none'
         />
 
         <TextInput
@@ -123,39 +136,40 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   firstTxt: {
-    fontSize: 45,
+    fontSize: hp(5.7),
     letterSpacing: 4.5,
     fontWeight: 'bold',
     color: 'white'
   },
   lastTxt: {
-    fontSize: 28,
+    fontSize: hp(3.5),
     letterSpacing: 8,
     color: 'white'
   },
   logInContainer: {
-    height: '8%',
-    width: '85%',
+    height: deviceWidth * 0.16,
+    width: deviceWidth * 0.85,
     borderRadius: 40,
     shadowColor: '#249646',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 6,
+    elevation: 4,
     backgroundColor: 'white',
-    marginTop: 30,
+    marginTop: deviceWidth * 1.15,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    position: 'absolute'
   },
   logInTxt: {
-    fontSize: 16,
+    fontSize: hp(2.3),
     alignSelf: 'center',
     color: 'Black',
     fontWeight: 'bold'
   },
   emailInput: {
-    height: 50,
-    width: '85%',
+    height: deviceWidth * 0.15,
+    width: deviceWidth * 0.85,
     borderRadius: 15,
     borderColor: 'white',
     borderWidth: 1,
@@ -167,8 +181,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   passInput: {
-    height: 50,
-    width: '85%',
+    height: deviceWidth * 0.15,
+    width: deviceWidth * 0.85,
     borderRadius: 15,
     borderColor: 'white',
     borderWidth: 1,
@@ -187,6 +201,6 @@ const styles = StyleSheet.create({
   forgotPasswordTxt: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 14
+    fontSize: hp(1.8)
   }
 })
